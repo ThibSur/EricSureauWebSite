@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+		
+	<head>
+		<meta charset="UTF-8">
+		<title>Les petits dessins d'Eric Sureau</title>
+		<link th:href="@{/css/style.css}" rel="stylesheet" />
+		<link rel="icon" th:href="@{/img/logos/ES.png}">
+	</head>
+
+	<body>
+			<div th:replace="fragments :: header" th:with="bdTitles=${bdTitles} and userRole=${userRole}"></div>  
+	
+			<section id = "index">
+
+				<div id = "intro">
+					<article>
+						<p>
+						 	Le monde a changé. Le numérique s'est invité partout dans nos vies. 
+						 	Par bonheur, il en existe quelques bons côtés, que je souhaite utiliser à travers ce site, en me permettant de vous partager 
+						 	facilement mes illustrations, qu'elles soient issues de mes indignations, mes passions ou des causes que je soutiens. 
+						</p>
+						<p>
+							Je souhaite aussi diffuser par ce biais mes nouvelles bandes dessinées, dans le mode 
+							"à suivre" cher à ma mémoire et aux magazines de ma jeunesse, quand la satisfaction immédiate de nos envies n'était pas la seule loi, 
+							que l'attente faisait partie du plaisir et que nous nous précipitions chaque semaine au kiosque dès la parution du nouveau numéro 
+							pour connaître la suite des aventures de nos héros favoris, généralement en fâcheuse posture.
+						</p>
+						<p>
+							Ils sont à partager avec amis ou sympathisants, bienveillants avec ce travail dans le respect des droits d'auteur.
+						 </p>
+						 <p>
+						 	Les dessins humoristiques se trouvent dans la rubrique illustrations et sont en rapport avec l'<a href = "/news">actualité</a>, 
+						 	le <a href = "/drawings?type=2">sport</a>, l'<a href = "/drawings?type=1">environnement</a> ou simplement des dessins <a href = "/drawings?type=3">personnels</a>.
+						 </p>
+						 <p>
+						 	Les bandes dessinées en cours de diffusion sont : 
+						</p>
+							 	<ul>
+				    				<li th:each="title : ${bdTitles}"> 
+				    					<a th:href="'/bd?n=' + ${titleStat.index}" th:text="${bdTitles[titleStat.index]}"></a> 
+				    				</li>
+						    	</ul>
+						 <p>
+						 	Enfin, des caricatures peuvent être consultées dans la catégorie <a href = "caricatures"> caricatures</a>.
+						</p>
+						<p>
+							Alors bienvenue et bonne lecture à vous.
+						</p>
+					</article>
+
+					<aside id = "biographie">
+						<figure>
+						<img id = "auteur" th:src="@{/img/logos/Riquet.jpg}" alt= "L'auteur"/>
+						</figure>
+						<p>
+							<strong> Le mot de l'auteur </strong> <br/>
+							Tout petit déjà, j'adorais dessiner des "petits mickeys". Elevé aux bandes dessinées franco-belges, 
+							fan absolu du grand maître Franquin, je fus d'abord un lecteur compulsif des magazines Spirou, Tintin, 
+							Pilote puis Fluide Glacial à sa création. <br/> 
+
+							J'ai intégré toutes ces influences pour commencer à dessiner puis développer un style plus personnel afin de créer 
+							mes propres histoires. J'en ai ainsi publié quelques unes dans des fanzines à la moitié des années 80, et j'avais bien l'intention 
+							d'en faire ma carrière. <br/> 
+
+							Mais la vie se charge de vous rappeler aux réalités, et des enfants arrivant, il a bien fallu les nourrir. Je me suis alors 
+							"temporairement" orienté vers des activités financièrement moins incertaines. <br/> 
+							Cette parenthèse d'une grosse trentaine d'années étant maintenant refermée, j'ai de nouveau l'occasion de me 
+							consacrer à 100% à ma passion.
+						</p>
+
+					</aside>
+				</div>
+
+				<div id="news">
+
+					<figure>
+						<figcaption> Dessin du mois </figcaption>
+						<a th:href="@{'/displayImage' +'?name=' + ${drawingMonth}}">  
+						<img id="drawingMonth" th:src="@{'/imagesP?name=' + ${drawingMonth}}" th:alt="${drawingMonth}" title="Cliquez pour agrandir" /></a>
+					</figure>
+					
+					<article th:each="date: ${siteNewsDate}"> 
+					<h4 th:text="${dateInLetters[dateStat.index]}"> </h4>
+					
+						<div th:each="currentNews : ${siteNews}" th:if="${currentNews.date} eq ${date}"> 
+						
+							<strong th:text="${currentNews.newsTitle}"> </strong>
+							<p th:text="${currentNews.texte}">	</p>
+						
+						</div>
+							
+					</article>
+										
+				</div>
+
+			</section>
+			
+			<th:block th:insert="~{fragments :: footer}"></th:block>
+	 
+	</body>
+</html>

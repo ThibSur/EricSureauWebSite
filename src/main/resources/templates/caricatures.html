@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<link th:href="@{/css/style.css}" rel="stylesheet" />
+		<link rel="icon" th:href="@{/img/logos/ES.png}">
+		<title>Caricatures</title>
+	</head>
+<body>
+
+		<div th:replace="fragments :: header" th:with="bdTitles=${bdTitles}"></div>  
+
+		<section id="drawings">		
+		
+			<div id="title">
+				<h3> Caricatures </h3>
+			</div>
+			
+			<div id="caricatures">	
+				<figure th:each="drawing: ${drawings}" th:if="${drawing.type} eq 'Caricature'">
+		    		<img th:src="@{'/images' +'?name=' + ${drawing.name}}" th:alt="${drawing.name}"  />
+		    	</figure>
+	    	</div>	
+
+		</section>
+
+		<th:block th:insert="~{fragments :: footer}"></th:block> 
+</body>
+</html>

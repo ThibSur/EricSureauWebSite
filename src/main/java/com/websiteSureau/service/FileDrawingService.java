@@ -38,7 +38,7 @@ public class FileDrawingService {
 
 	public void save(MultipartFile file, String type, String title) throws Exception {
 		
-		if (type.equals("Actualité") || type.equals("Dessin-du-Mois")) {
+		if (type.equals("BD_Accueil") || type.equals("Dessin-du-Mois")) {
 			s3Repository.saveFile(file, "staticimages/public/");
 		}
 		

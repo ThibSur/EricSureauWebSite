@@ -48,12 +48,15 @@ public class WebsiteController {
 	    Iterable<Drawing> drawings = serviceDrawing.getDrawings();
 	    
     	String nameDrawingOfTheMonth = null;
+    	Drawing comicsOfTheMonth = new Drawing();
     	
     	for (Drawing d : drawings) {
     		if (d.getType().equals("Dessin-du-Mois")) nameDrawingOfTheMonth=d.getName();
+    		if (d.getType().equals("BD_Accueil")) comicsOfTheMonth=d;
     	}
     	
     	model.addAttribute("drawingMonth", nameDrawingOfTheMonth);
+    	model.addAttribute("comicsMonth", comicsOfTheMonth);
     	
     	List<SiteNews> siteNews = newsService.getNews();
     	
@@ -111,7 +114,7 @@ public class WebsiteController {
 		String[] titles = serviceDrawing.getComicsTitles();
 	    model.addAttribute("bdTitles", titles);
 	    	
-	    String[] typesOfDrawings = {"Actualité", "Environnement", "Sport", "Personnel"};
+	    String[] typesOfDrawings = {"Actualités", "Environnement", "Sport", "Personnel", "Caricatures"};
 	    String typeofDrawing = typesOfDrawings[type];
 	    	
 	    Iterable<Drawing> listDrawings = serviceDrawing.getDrawings();
@@ -133,41 +136,7 @@ public class WebsiteController {
 	    	
 	    return "drawings";
 	}
-	  
-	@GetMapping("/news")
-	public String showPublicDrawings(Model model)  {
-		String[] titles = serviceDrawing.getComicsTitles();
-		model.addAttribute("bdTitles", titles);
-	    	
-		Iterable<Drawing> listDrawings = serviceDrawing.getDrawings();
-	    	
-		ArrayList<Drawing> listofDrawingsOfTheType = new ArrayList<Drawing>();
-	    	
-		for (Drawing d : listDrawings) {
-	    	if (d.getType().equals("Actualité")) listofDrawingsOfTheType.add(d);
-	    }
-	    	
-	    ArrayList<String> drawingsDate = serviceDrawing.getDrawingsDate(listofDrawingsOfTheType);
-	    String[] dateInLetters = calendarService.createArrayWithDateinLetters(drawingsDate);
 	    
-	    model.addAttribute("drawingsDate", drawingsDate);
-	    model.addAttribute("dateInLetters", dateInLetters);
-	    model.addAttribute("drawings", listofDrawingsOfTheType);
-	    	
-	    return "news";
-	    }
-	    
-	@GetMapping("/caricatures")
-	public String showCaricatures(Model model) {
-		String[] titles = serviceDrawing.getComicsTitles();
-	    model.addAttribute("bdTitles", titles);
-	    	
-		Iterable<Drawing> listDrawings = serviceDrawing.getDrawings();
-	    model.addAttribute("drawings", listDrawings);
-	    	
-		return "caricatures";
-	}
-		
 	@GetMapping("/bd")
 	public String bd(Model model, @RequestParam int n) {
 	    	
@@ -207,11 +176,11 @@ public class WebsiteController {
 				type = d.getType(); 
 			}
 		}
-
+		
 		model.addAttribute("drawingName", name);
 		model.addAttribute("drawingTitle", title);
 		model.addAttribute("drawingType", type);
-			
+		
 		return "displayImage";
 	}
 		
@@ -222,4 +191,11 @@ public class WebsiteController {
 		return "contactpage";
 	}
 		
+	@GetMapping("/author")
+	public String authorPage(Model model) {
+		String[] titles = serviceDrawing.getComicsTitles();
+	    model.addAttribute("bdTitles", titles);
+	    	
+		return "author";
+	}
 }

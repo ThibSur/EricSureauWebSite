@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+		<head>
+			<meta charset="UTF-8">
+			<title>L'Auteur</title>
+			<link th:href="@{/css/style.css}" rel="stylesheet" />
+			<link rel="icon" th:href="@{/img/logos/ES.png}">
+		</head>
+
+	<body>	
+			
+		<div th:replace="fragments :: header" th:with="bdTitles=${bdTitles}"></div>  
+				
+		<section id = "author">
+		
+			<figure>
+				<img id = "auteur" th:src="@{/img/logos/Riquet.jpg}" alt= "L'auteur"/>
+			</figure>
+		
+			<aside>
+				<p>
+					Tout petit déjà, j'adorais dessiner des "petits mickeys". Elevé aux bandes dessinées franco-belges, 
+					fan absolu du grand maître Franquin, je fus d'abord un lecteur compulsif des magazines Spirou, Tintin, 
+					Pilote puis Fluide Glacial à sa création. <br/> 
+		
+					J'ai intégré toutes ces influences pour commencer à dessiner puis développer un style plus personnel afin de créer 
+					mes propres histoires. J'en ai ainsi publié quelques unes dans des fanzines à la moitié des années 80, et j'avais bien l'intention 
+					d'en faire ma carrière. <br/> 
+		
+					Mais la vie se charge de vous rappeler aux réalités, et des enfants arrivant, il a bien fallu les nourrir. Je me suis alors 
+					"temporairement" orienté vers des activités financièrement moins incertaines. <br/> 
+					Cette parenthèse d'une grosse trentaine d'années étant maintenant refermée, j'ai de nouveau l'occasion de me 
+					consacrer à 100% à ma passion.
+					</p>
+			
+			</aside>
+					
+		</section>
+		
+		<th:block th:insert="~{fragments :: footer}"></th:block> 
+	
+	</body>
+</html>

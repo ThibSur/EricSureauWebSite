@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+		<head>
+			<meta charset="UTF-8">
+			<title>Admin</title>
+			<link th:href="@{/css/style.css}" rel="stylesheet" />
+			<link rel="icon" th:href="@{/img/logos/ES.png}">
+		</head>
+
+	<body>	
+			<div th:replace="fragments :: header" th:with="bdTitles=${bdTitles}"></div>  
+				
+			<section id="adminpage">
+			
+				<h2 class="h2">Administrateur</h2>
+				
+				<h3>Gestion des abonnés</h3>
+
+				<div class="container">
+									
+					<div id="scroller">
+						       			
+		       			<div th:if="${param.confirm}" class="alert alert-error">
+		        		<p style="font-size: 20; color: #F3FF84;"> L'abonné a bien été modifié </p>
+		       			</div>
+						
+						<table>
+
+							<tbody>
+								<tr th:if="${users.empty}">
+									<td colspan="3">Aucun abonné en base de données</td>
+								</tr>
+								<tr th:each="user: ${users}">
+									<td><span th:text="${user.name}"> Prénom </span></td>
+									<td><span th:text="${user.lastName}"> Nom </span></td>
+									<td><span th:text="${user.email}"> Mail </span></td>
+									<td>
+										<a th:href="@{/updateUser/{id}(id=${user.id})}"><button>Modifier</button></a>
+										<a th:href="@{/deleteUserPage?id={id}(id=${user.id})}"><button>Supprimer</button></a>
+									</td>
+								</tr>
+								
+							</tbody>
+							
+						</table>
+						
+						<h4><a th:href="@{/createUser}">Ajouter un nouvel abonné</a></h4>
+								  			
+					</div>
+					
+				</div>
+				
+				<h3>Gestion des dessins</h3>								
+				
+				<div id="filesManage" class="container">
+					
+					<div>																				                
+						<h4>Ajouter un dessin</h4>
+						<p th:text="${message1}" th:if="${message1 ne null}" class="alert alert-primary" style="color: rgb(128, 0, 0);"></p>
+						<p th:text="${message2}" th:if="${message2 ne null}" class="alert alert-primary" style="color: rgb(0, 128, 0);"></p>					                
+						<form method="post" th:action="@{/uploadFile}" enctype="multipart/form-data">					                    
+							<div class="form-group">
+								<input type="file" name="file" class="form-control-file">
+							</div>			                    
+							<div class="form-group">
+								<label for="typeDrawing"> Catégorie </label>
+								<select th:name="typeDrawing" id="typeDrawing">
+									<option value="Actualités">Actualités</option>
+									<option value="Environnement">Environnement</option>
+									<option value="Sport">Sport</option>
+									<option value="Personnel">Personnel</option>
+									<option value="Caricatures">Caricatures</option>
+									<option value="BD">Bande dessinée</option>
+									<option value="Dessin-du-Mois">Dessin du mois</option>
+									<option value="BD_Accueil">BD page d'accueil</option>
+								</select>						
+							</div>										
+							<div class="form-group">
+								<label for="title"> Titre </label>
+								<input th:name="title" type="text" id="title" placeholder="Saisir le titre">
+							</div>
+							<button type="submit" class="btn btn-primary">Envoyer</button>
+						</form>
+  					</div>
+  					
+  					<div>					
+					    <h4>Supprimer un dessin</h4>
+					    <p th:text="${message3}" th:if="${message3 ne null}" class="alert alert-primary" style="color: rgb(0, 128, 0);"></p>
+					    <p th:text="${message4}" th:if="${message4 ne null}" class="alert alert-primary" style="color: rgb(128, 0, 0);"></p>  				                
+					     <form method="post" th:action="@{/deleteFile}">				                
+							<div class="form-group">
+								<label for="nameFile"> Nom du dessin </label>
+								<select name="nameFile" id="nameFile">
+									<option selected value="">Sélectionner un dessin à supprimer</option>
+									<option th:each="d: ${drawings}" th:value="${d.name}" th:text="${d.name}" ></option>
+								</select>
+							</div>					                    
+					       	<button type="submit" class="btn btn-primary">Supprimer</button>           					                    
+						</form>       
+					   
+					</div>
+								           
+				</div>
+				
+				<h3>Gestion des actualités</h3>								
+				
+				<div id="newsManage" class="container">
+					
+					<div>																				                
+						<h4>Ajouter une actualité </h4>
+								                
+						<p th:text="${message5}" th:if="${message5 ne null}" class="alert alert-primary" style="color: rgb(0, 128, 0);"></p>
+					    
+						<form method="post" th:action="@{/saveNews}" th:object="${siteNews}">					                    
+							
+							<div class="form-group">
+								<label for="newsTitle">Titre</label> 
+								<input
+									type="text" th:field="*{newsTitle}" class="form-control" id="titleInput"
+									placeholder="Saisir le titre"> 
+							</div>
+			
+							<div class="form-group">
+								<textarea
+								name="texte" th:field="*{texte}" class="form-control" id="messageInput" 
+								rows="10" cols="50" required> Ecrivez votre texte ici. </textarea>
+							</div>	
+															
+							<button type="submit" class="btn btn-primary">Sauvegarder</button>
+							
+						</form>
+  					</div>
+  					
+  					<div>					
+					    <h4>Supprimer une actualité </h4>			 
+					    
+					   	<p th:text="${message6}" th:if="${message6 ne null}" class="alert alert-primary" style="color: rgb(0, 128, 0);"></p>
+					       
+					     <form method="post" th:action="@{/deleteNews}">				                
+							<div class="form-group">
+								<label for="nameFile"> Titre </label>
+								<select name="newsId" id="newsId	">
+									<option selected value="">Sélectionner une actualité à supprimer</option>
+									<option th:each="sn: ${listSiteNews}" th:value="${sn.id}" th:text="${sn.date} + '/' + ${sn.id}" ></option>
+								</select>
+							</div>					                    
+					       	<button type="submit" class="btn btn-primary">Supprimer</button>           					                    
+						
+						</form>       
+					   
+					</div>
+								           
+				</div>
+					
+			</section>
+			
+			<th:block th:insert="~{fragments :: footer}"></th:block> 
+	 
+	</body>
+</html>

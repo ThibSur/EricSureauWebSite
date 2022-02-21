@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+		<head>
+			<meta charset="UTF-8">
+			<title>Legal</title>
+			<link th:href="@{/css/style.css}" rel="stylesheet" />
+			<link rel="icon" th:href="@{/img/logos/ES.png}">
+		</head>
+
+	<body>
+			<header>				
+				<div id="logo">
+					<h1> LES PETITS DESSINS d'ERIC SUREAU </h1>
+					<img th:src="@{/img/logos/ES.png}" alt="Logo"/> 
+				</div>
+				<nav class="topnav" id="myTopnav">
+					<a href="/" class="active">Retour au site</a>       
+				</nav>  
+						  
+			</header>  
+
+			<section>
+			
+				<div id="legalnotice">
+					<h2>Mentions Légales</h2>
+					<h3>Editeur</h3>
+					<p>
+					Eric Sureau <br/>
+					Email : ericsureau.fr@gmail.com	
+					</p>
+									
+					<h3>Propriété intellectuelle - Droits d'auteur</h3>
+					<p>			
+					L'ensemble des éléments du site ainsi que le nom de domaine ericsureau.fr
+					sont protégés par les droits de propriété intellectuelle conformément aux législations européennes et internationales.
+					En particulier, l'ensemble des oeuvres disponibles sur le site (les dessins, logos, bandes dessinées et autres illustrations) sont protégés par
+					les droits d'auteurs et sont la propriété exclusive de l'éditeur. 
+					La reproduction ou représentation partielle ou intégrale de tout élément du site par quelque moyen que ce soit à des fins autres 
+					que strictement personnelles est interdite et constitue, sans autorisation préalable et expresse de l'éditeur, 
+					une contrefaçon constitutive de sanctions civiles et pénales.
+					</p>
+					
+					<h3>Données personnelles</h3>
+					<p>			
+					Des données personnelles (prénom, nom, adresse email) sont recueillies en cas d'inscription sur le site. 
+					Elles sont exclusivement utilisées à des fins d'inscription et de connexion sur ce site.
+					En application de la loi Informatique et libertés et du RGPD, vous pouvez exercer vos droits d'accès, d'opposition, de rectification ou 
+					de suppression auprès du responsable du traitement : Eric Sureau par courrier électronique à l'adresse ericsureau.fr@gmail.com.
+					</p>
+					
+					<h3>Hébergeur</h3>
+					<p>
+					Ce site est hébergé par la société Amazon Web Services : <br/>
+						Amazon Web Services EMEA SARL	<br/>
+						38 Avenue John F. Kennedy	<br/>
+						L-1855, Luxembourg	<br/>
+						https://aws.amazon.com	<br/>
+					</p>							
+				
+				</div>
+				
+			</section>
+			
+			<th:block th:insert="~{fragments :: footer}"></th:block> 
+	 
+	</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<link th:href="@{/css/style.css}" rel="stylesheet" />
+		<link rel="icon" th:href="@{/img/logos/ES.png}">
+		<title th:text="${title}"> </title>
+	</head>
+<body>
+		<div th:replace="fragments :: header" th:with="bdTitles=${bdTitles}"></div>
+		
+		<section id = "bd">
+			
+			<button class="left" onclick="plusDivs(-1)">&#10094;</button>
+			
+			<figure th:each="bd : ${drawings}" class="mySlides" >
+				<img th:src="@{'/images' +'?name=' + ${bd}}" th:alt="${title}" />
+				<figcaption th:text="'Page ' + ${bdStat.index}"> </figcaption>
+			</figure>
+  			
+  			<button class="right" onclick="plusDivs(1)">&#10095;</button>
+
+		</section>
+
+		<th:block th:insert="~{fragments :: footer}"></th:block> 
+
+<script type="text/javascript" th:src="@{/js/myscript.js}"></script>
+
+</body>
+</html>

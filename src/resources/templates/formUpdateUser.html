@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>Modification</title>
+		<link th:href="@{/css/style.css}" rel="stylesheet" />
+		<link rel="icon" th:href="@{/img/logos/ES.png}">
+	</head>
+<body>
+
+	<header>				
+		<div id="logo">
+			<h1> LES PETITS DESSINS d'ERIC SUREAU </h1>
+			<img th:src="@{/img/logos/ES.png}" alt="Logo"/> 
+		</div>
+		<nav class="topnav" id="myTopnav">
+			<a href="/" class="active">Retour au site</a>       
+		</nav>  
+				  
+	</header>    
+	
+	<section id="forms">
+	<div class="container special">
+
+		<h2 class="h2">Modification d'un abonné</h2>
+		
+		<div>
+			<form method="post"
+				th:action="@{/updateUser}" th:object="${user}">
+				
+				<div class="form-group">
+					<input type="hidden" th:field="*{id}" class="form-control">
+				</div>
+		       	
+				<div class="form-group">
+					<label for="name">Prénom</label> 
+					<input
+						type="text" th:field="*{name}" class="form-control" id="nameInput"
+						aria-describedby="nameHelp" placeholder="Saisir le prénom" required> 
+				</div>
+
+				<div class="form-group">
+					<label for="lastName">Nom</label> 
+					<input
+						type="text" th:field="*{lastName}" class="form-control" id="nameInput"
+						aria-describedby="nameHelp" placeholder="Saisir le nom" required> 
+				</div>
+
+				<div class="form-group">
+					<label for="mailInput">Email</label> 
+					<input
+						type="email" th:field="*{email}" class="form-control" id="mailInput"
+						aria-describedby="mailHelp" placeholder="Saisir l'adresse email" required> 
+				</div>
+							       	
+		       	<div class="form-group">
+					<label for="enabledUser"> Utilisateur activé / désactivé </label>
+				    <select th:field="*{enabled}" name="enabled" id="enabledInput">
+				          <option value="1">OUI</option>
+				          <option value="0">NON</option>
+				    </select>
+				    <br/>
+					(une activation enverra un mail à l'utilisateur pour créer son mot de passe) 
+				</div>
+		       			      	
+				<button type="submit" class="btn btn-primary">Modifier</button>
+			</form>
+			
+			<form id="return" method="get" th:action="@{/admin}">
+				<button type="submit" class="btn btn-primary">Retour</button>
+			</form>
+			
+			<div th:if="${param.error1}" class="alert alert-error">
+		    <p style="font-size: 20; color: rgb(128, 0, 0);"> Aucune modification enregistrée </p>
+		    </div>
+		       	
+		</div>
+
+	</div>
+	</section>
+	
+</body>
+</html>

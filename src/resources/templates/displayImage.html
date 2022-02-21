@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<link th:href="@{/css/style.css}" rel="stylesheet" />
+		<link rel="icon" th:href="@{/img/logos/ES.png}">
+		<title th:text="${drawingType}"> </title>
+	</head>
+	
+<body>
+		<div th:replace="fragments :: header" th:with="bdTitles=${bdTitles}"></div>  
+		
+		<section id="displayImage">
+			
+			<h4 th:text="${drawingTitle}"></h4>
+			
+			<div th:switch="${drawingType}">
+				
+				<a href="javascript:history.back()">		
+					<img th:case="'BD_Accueil'" th:src="@{'/imagesP' +'?name=' + ${drawingName}}" style="max-width: 100%;"/>
+					<img th:case="'Dessin-du-Mois'" th:src="@{'/imagesP' +'?name=' + ${drawingName}}" style="max-height: 100vh; max-width: 100%;"/>
+					<img th:case="*" th:src="@{'/images' +'?name=' + ${drawingName}}" style="max-height: 100vh; max-width: 100%;"/>
+				</a>
+							
+			</div>
+	
+		</section>
+		
+		<th:block th:insert="~{fragments :: footer}"></th:block> 
+		
+</body>
+</html>

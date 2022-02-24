@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.websiteSureau.service.FileDrawingService;
+import com.websiteSureau.service.FilesService;
 
 @Controller
 public class FilesController {
 
 	@Autowired
-	FileDrawingService serviceDrawing;
+	FilesService serviceDrawing;
 	    
     @PostMapping("/uploadFile")
     public String uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("typeDrawing") 

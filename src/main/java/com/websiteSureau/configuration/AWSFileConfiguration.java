@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+//Configuration for amazon S3 bucket access
+
 @Configuration
 public class AWSFileConfiguration {
 

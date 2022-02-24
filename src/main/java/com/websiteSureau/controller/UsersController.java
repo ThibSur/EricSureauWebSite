@@ -114,4 +114,27 @@ public class UsersController {
 		if (s.equals("confirm")) { return new ModelAndView("redirect:/"); }
 		else { return new ModelAndView("redirect:/createPassword/" + user.getId() + "?code=" + user.getVerificationCode() + "&" + s); }
 	}
+	
+	
+	@GetMapping("/resetPassword")
+	public String getResetPasswordPage(Model model) {
+	
+		MyUser u = new MyUser();
+		model.addAttribute("user", u);
+		
+	    return "resetPassword";
+		
+	}
+	
+	@PostMapping("/resetPassword")
+	public String resetPassword(@ModelAttribute MyUser user, HttpServletRequest request, RedirectAttributes attributes) throws UnsupportedEncodingException, MessagingException {
+		
+		Boolean r = userService.resetPassword(user, getSiteURL(request));
+		userService.deleteVerificationCode(user, 3600);
+		
+	    attributes.addFlashAttribute("passwordReseted", r);
+	    
+	    return "redirect:/resetPassword";
+		
+	}
 }

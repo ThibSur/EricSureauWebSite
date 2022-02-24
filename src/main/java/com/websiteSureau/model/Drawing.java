@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "drawings")
 public class Drawing {
-
+	
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
@@ -20,8 +20,8 @@ public class Drawing {
     private String name;
             
     private String date;
-    
-    private String type;
+
+	private String type;
     
     private String title;
 }

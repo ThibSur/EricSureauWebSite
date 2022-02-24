@@ -23,9 +23,9 @@ public class UserService {
 	
     @Autowired
 	protected UserRepository userRepository;
-    
+
 	@Autowired
-	private EmailService mailService;
+	protected EmailServiceImpl mailService;
     
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
@@ -47,7 +47,7 @@ public class UserService {
     	
     	user.setUserName(user.getEmail());
 	   	userRepository.save(user);
-	   	sendNewAccountUserEmail(user,siteURL);
+	   	mailService.sendNewAccountUserEmail(user,siteURL);
 	}
     
     public String updateUser(MyUser user, String siteURL) throws UnsupportedEncodingException, MessagingException {
@@ -85,7 +85,7 @@ public class UserService {
 					currentUser.setAuthority("ROLE_USER");
 					currentUser.setEnabled(user.getEnabled());
 					
-			        sendVerificationEmail(currentUser, siteURL);
+					mailService.sendVerificationEmail(currentUser, siteURL);
 				}
 				
 		   		userRepository.save(currentUser);
@@ -99,6 +99,24 @@ public class UserService {
 		   	}
     }
 
+    public boolean resetPassword(MyUser user, String siteURL) throws UnsupportedEncodingException, MessagingException {
+    	
+    	boolean result = false;
+    	
+    	Iterable<MyUser> listUsers = getUsers();
+    	
+    	for (MyUser u : listUsers) {
+    		if (u.getEmail().equals(user.getEmail()) && u.getEnabled()==1) {
+    			String randomCode = RandomString.make(64);
+    			u.setVerificationCode(randomCode);
+    			mailService.sendResetPasswordEmail(u, siteURL);
+    			userRepository.save(u);
+    			result=true;
+    			break;
+    		}
+    	}  	
+    	return result;
+    }
     
     public String savePassword(MyUser user) {
     	
@@ -126,30 +144,6 @@ public class UserService {
 			   	return statutMethodSave;
 		   	}
 	}
-        
-    protected void sendVerificationEmail(MyUser user, String siteURL)
-            throws MessagingException, UnsupportedEncodingException {
-    	
-        String verifyURL = siteURL + "/createPassword/" + user.getId() + "?code=" + user.getVerificationCode();
-
-		mailService.sendSimpleMessage(user.getEmail(), 
-									"Activation de votre compte ericsureau.fr", 
-									"Enregistrez votre mot de passe pour activer votre compte : " 
-											+ verifyURL);
-
-    }
-    
-    protected void sendNewAccountUserEmail(MyUser user, String siteURL)
-            throws MessagingException, UnsupportedEncodingException {
-    	
-        String verifyURL = siteURL + "/updateUser/" + user.getId();
-
-		mailService.sendSimpleMessage("ericsureau.fr@gmail.com", 
-									"Ouverture de compte", 
-									"Une demande d'ouverture de compte vient d'être effectuée, pour valider la demande : " 
-											+ verifyURL);
-
-    }
     
     public String getUserRole() {
     	

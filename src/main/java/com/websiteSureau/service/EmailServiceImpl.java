@@ -1,30 +1,107 @@
 package com.websiteSureau.service;
 
+
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+
+import com.websiteSureau.model.Message;
+import com.websiteSureau.model.MyUser;
 
 @Service("EmailService")
 public class EmailServiceImpl implements EmailService {
-
-    @Autowired
+	
+	@Autowired
     private JavaMailSender emailSender;
+	
+	@Autowired
+	private SpringTemplateEngine thymeleafTemplateEngine;
 
 	@Override
-    public void sendSimpleMessage(String to, String subject, String text) {
-		try {
-	        SimpleMailMessage message = new SimpleMailMessage(); 
-	        message.setFrom("ericsureau.fr@gmail.com");
-	        message.setTo(to); 
-	        message.setSubject(subject); 
-	        message.setText(text);
-	        emailSender.send(message);
-	        
-		} catch (MailException exception) {
-            exception.printStackTrace();
-        }
-    }
+	public void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException {
+	    MimeMessage message = emailSender.createMimeMessage();
+	    MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+	    helper.setFrom("ericsureau.fr@gmail.com");
+	    helper.setTo(to);
+	    helper.setSubject(subject);
+	    helper.setText(htmlBody, true);
+	    helper.addAttachment("attachment.png", new ClassPathResource("/static/img/logos/ES.png"));
+	    emailSender.send(message);
+	}
 
+	public void sendMessageUsingThymeleafTemplate(String to, String subject, Map<String, Object> templateModel)
+		        throws MessagingException {
+		                
+		Context thymeleafContext = new Context();
+		thymeleafContext.setVariables(templateModel);
+		String htmlBody = thymeleafTemplateEngine.process("emailTemplate.html", thymeleafContext);
+		    
+		sendHtmlMessage(to, subject, htmlBody);	
+	}
+	
+	public void sendVerificationEmail(MyUser user, String siteURL)
+            throws MessagingException, UnsupportedEncodingException {
+		
+		String verifyURL = siteURL + "/createPassword/" + user.getId() + "?code=" + user.getVerificationCode();
+		
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("nameUser", user.getName());
+        model.put("text", "Enregistrez votre mot de passe pour activer votre compte :");
+        model.put("link", verifyURL);
+        model.put("text2", "Bonne découverte,");
+    	
+        sendMessageUsingThymeleafTemplate(user.getEmail(), "Activation de votre compte ericsureau.fr", model);
+
+	}
+	
+	public void sendResetPasswordEmail(MyUser user, String siteURL)
+            throws MessagingException, UnsupportedEncodingException {
+
+		String verifyURL = siteURL + "/createPassword/" + user.getId() + "?code=" + user.getVerificationCode();
+		
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("nameUser", user.getName());
+        model.put("text", "Cliquez sur ce lien pour réinitialiser votre mot de passe : ");
+        model.put("link", verifyURL);
+        model.put("text2", "Ce lien restera valide 1h.");
+    	
+        sendMessageUsingThymeleafTemplate(user.getEmail(), "Réinitialiser votre mot de passe - ericsureau.fr", model);
+	}
+	
+	
+	public void sendNewAccountUserEmail(MyUser user, String siteURL)
+            throws MessagingException, UnsupportedEncodingException {
+    	
+        String verifyURL = siteURL + "/updateUser/" + user.getId();
+        
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("nameUser", "Eric");
+        model.put("text", "Une demande d'ouverture de compte vient d'être effectuée, pour valider la demande :");
+        model.put("link", verifyURL);
+
+		sendMessageUsingThymeleafTemplate("ericsureau.fr@gmail.com", "Ouverture de compte", model);
+	}
+	
+	public void sendContactFormEmail(Message message)
+            throws MessagingException, UnsupportedEncodingException {
+    	        
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("nameUser", "Eric");
+        model.put("text", "Message de " + message.getName() + " " + message.getLastName() 
+        								+ " (" + message.getEmail() + ") : ");
+        model.put("text2", message.getMessage());
+
+		sendMessageUsingThymeleafTemplate("ericsureau.fr@gmail.com", "Nouveau message d'un utilisateur du site", model);
+	}
 }

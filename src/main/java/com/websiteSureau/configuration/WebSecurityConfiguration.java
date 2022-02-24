@@ -12,6 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.websiteSureau.service.MyUserDetailsService;
 
+//SpringSecurity configurations
+
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -34,11 +36,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
 			http.authorizeRequests()
 		 	.antMatchers("/", "/contact", "/saveUser", "/createPassword/**", "/savePassword", 
 		 				"/createUser/**", "/sendMessage", "/css/*.css", "/js/*.js",
-		 				"/imagesP", "/author", "/displayImage","/img/logos/**", "/fragments", "/legal")
+		 				"/imagesP", "/author", "/displayImage","/img/logos/**", "/fragments", "/legal", "/resetPassword")
 		 				.permitAll()
 		 	.antMatchers("/admin", "/updateUser/*", "/uploadFile", "/deleteFile",
 		 				"/deleteUserPage", "/deleteUser/*", "/saveNews", "/deleteNews")

@@ -17,7 +17,7 @@ import com.websiteSureau.model.Message;
 import com.websiteSureau.model.MyUser;
 import com.websiteSureau.model.SiteNews;
 import com.websiteSureau.service.CalendarService;
-import com.websiteSureau.service.FileDrawingService;
+import com.websiteSureau.service.FilesService;
 import com.websiteSureau.service.SiteNewsService;
 import com.websiteSureau.service.UserAsynchServiceImpl;
 
@@ -28,7 +28,7 @@ public class WebsiteController {
 	private UserAsynchServiceImpl userService;
 		
 	@Autowired
-	private FileDrawingService serviceDrawing;
+	private FilesService serviceDrawing;
 	
 	@Autowired
 	private SiteNewsService newsService;
@@ -37,7 +37,7 @@ public class WebsiteController {
 	private CalendarService calendarService;
     
 	@GetMapping("/")
-	public String index(Model model) {
+	public String getHomePage(Model model) {
 		
 	   	String[] titles = serviceDrawing.getComicsTitles();
     	model.addAttribute("bdTitles", titles);
@@ -47,17 +47,17 @@ public class WebsiteController {
 	    
 	    Iterable<Drawing> drawings = serviceDrawing.getDrawings();
 	    
-    	String nameDrawingOfTheMonth = null;
-    	Drawing comicsOfTheMonth = new Drawing();
-    	
-    	for (Drawing d : drawings) {
-    		if (d.getType().equals("Dessin-du-Mois")) nameDrawingOfTheMonth=d.getName();
-    		if (d.getType().equals("BD_Accueil")) comicsOfTheMonth=d;
-    	}
-    	
-    	model.addAttribute("drawingMonth", nameDrawingOfTheMonth);
-    	model.addAttribute("comicsMonth", comicsOfTheMonth);
-    	
+	    String nameDrawingOfTheMonth = null;
+		Drawing comicsOfTheMonth = new Drawing();
+		
+		for (Drawing d : drawings) {
+			if (d.getType().equals("Dessin-du-Mois")) nameDrawingOfTheMonth=d.getName();
+			if (d.getType().equals("BD_Accueil")) comicsOfTheMonth=d;
+		}
+		
+		model.addAttribute("drawingMonth", nameDrawingOfTheMonth);
+		model.addAttribute("comicsMonth", comicsOfTheMonth);
+	    	
     	List<SiteNews> siteNews = newsService.getNews();
     	
     	ArrayList<String> siteNewsDate = newsService.getNewsDate(siteNews);
@@ -73,7 +73,7 @@ public class WebsiteController {
 	}
 	
 	@GetMapping("/admin")
-	public String admin(Model model) {
+	public String getAdminPage(Model model) {
 		String[] titles = serviceDrawing.getComicsTitles();
     	model.addAttribute("bdTitles", titles);
     	
@@ -93,7 +93,7 @@ public class WebsiteController {
 	}
 	
     @GetMapping("/login")
-    public ModelAndView login(Model model){
+    public ModelAndView getLoginPage(Model model){
    	    
     	final String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
     	model.addAttribute("currentUser", currentUser);
@@ -105,12 +105,13 @@ public class WebsiteController {
     }
 	
 	@GetMapping("/legal")
-	public String legal() {	
+	public String getLegalPage() {	
 		return "legalnotices";
 	}
 	
 	@GetMapping("/drawings")
-	public String showDrawings(Model model, @RequestParam int type)  {
+	public String showDrawingsByType(Model model, @RequestParam int type)  {
+		
 		String[] titles = serviceDrawing.getComicsTitles();
 	    model.addAttribute("bdTitles", titles);
 	    	
@@ -138,7 +139,7 @@ public class WebsiteController {
 	}
 	    
 	@GetMapping("/bd")
-	public String bd(Model model, @RequestParam int n) {
+	public String showComicsByTitle(Model model, @RequestParam int n) {
 	    	
 		Iterable<Drawing> listDrawings = serviceDrawing.getDrawings();
 		   	
@@ -185,14 +186,14 @@ public class WebsiteController {
 	}
 		
 	@GetMapping("/contact")
-	public String contact(Model model) {
+	public String getContactPage(Model model) {
 		Message m = new Message();
 		model.addAttribute("message", m);
 		return "contactpage";
 	}
 		
 	@GetMapping("/author")
-	public String authorPage(Model model) {
+	public String getAuthorPage(Model model) {
 		String[] titles = serviceDrawing.getComicsTitles();
 	    model.addAttribute("bdTitles", titles);
 	    	

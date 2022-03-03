@@ -19,14 +19,14 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.websiteSureau.model.MyUser;
-import com.websiteSureau.service.UserAsynchServiceImpl;
+import com.websiteSureau.service.UserService;
 
 @Controller
 @EnableAsync
 public class UsersController {
 	
 	@Autowired
-	private UserAsynchServiceImpl userService;
+	private UserService userService;
 	
 	@GetMapping("/createUser")
 	public String createUser(Model model) {

@@ -53,20 +53,20 @@ public class FilesService {
 		String imageName = file.getOriginalFilename();     		
         Calendar cal = Calendar.getInstance();
         String month = null;
+        
         if (cal.get(Calendar.MONTH)==10 || cal.get(Calendar.MONTH)==11) { 
         	month = cal.get(Calendar.MONTH) + "";      
-        } else { month= "0" +  cal.get(Calendar.MONTH);} 
+        } else { month= "0" +  cal.get(Calendar.MONTH); }
+        
         String date = cal.get(Calendar.YEAR) + "-" + month;   
         
         Drawing drawing = new Drawing();
-        
         drawing.setName(imageName);
         drawing.setDate(date);
         drawing.setTitle(title);
         drawing.setType(type);
         
-        drawingRepository.save(drawing);
-        
+        drawingRepository.save(drawing);        
     }
 	
 	public void deleteByName(String name) {
@@ -81,8 +81,8 @@ public class FilesService {
 				
 				// delete file in server
 				if (d.getType().equals("Actualité") || d.getType().equals("Dessin-du-Mois")) {
-						s3Repository.delteByName("staticimages/public/" + name);
-				} else { s3Repository.delteByName("staticimages/private/" + name); }
+						s3Repository.deleteByName("staticimages/public/" + name);
+				} else { s3Repository.deleteByName("staticimages/private/" + name); }
 				
 			}
 		}

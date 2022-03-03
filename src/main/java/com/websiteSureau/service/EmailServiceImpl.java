@@ -59,7 +59,7 @@ public class EmailServiceImpl implements EmailService {
         model.put("nameUser", user.getName());
         model.put("text", "Enregistrez votre mot de passe pour activer votre compte :");
         model.put("link", verifyURL);
-        model.put("text2", "Bonne découverte,");
+        model.put("text2", "Bonne découverte.");
     	
         sendMessageUsingThymeleafTemplate(user.getEmail(), "Activation de votre compte ericsureau.fr", model);
 
@@ -98,8 +98,7 @@ public class EmailServiceImpl implements EmailService {
     	        
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("nameUser", "Eric");
-        model.put("text", "Message de " + message.getName() + " " + message.getLastName() 
-        								+ " (" + message.getEmail() + ") : ");
+        model.put("text", "Message de " + message.getName() + " " + message.getLastName() + " (" + message.getEmail() + ") : ");
         model.put("text2", message.getMessage());
 
 		sendMessageUsingThymeleafTemplate("ericsureau.fr@gmail.com", "Nouveau message d'un utilisateur du site", model);

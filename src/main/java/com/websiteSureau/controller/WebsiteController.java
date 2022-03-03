@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -19,13 +20,13 @@ import com.websiteSureau.model.SiteNews;
 import com.websiteSureau.service.CalendarService;
 import com.websiteSureau.service.FilesService;
 import com.websiteSureau.service.SiteNewsService;
-import com.websiteSureau.service.UserAsynchServiceImpl;
+import com.websiteSureau.service.UserService;
 
 @Controller
 public class WebsiteController {
 	
 	@Autowired
-	private UserAsynchServiceImpl userService;
+	private UserService userService;
 		
 	@Autowired
 	private FilesService serviceDrawing;
@@ -35,9 +36,11 @@ public class WebsiteController {
 	
 	@Autowired
 	private CalendarService calendarService;
-    
+    	
 	@GetMapping("/")
 	public String getHomePage(Model model) {
+		
+		// Get the home page of the site with public drawing, comics of the Month and news.
 		
 	   	String[] titles = serviceDrawing.getComicsTitles();
     	model.addAttribute("bdTitles", titles);
@@ -48,15 +51,15 @@ public class WebsiteController {
 	    Iterable<Drawing> drawings = serviceDrawing.getDrawings();
 	    
 	    String nameDrawingOfTheMonth = null;
-		Drawing comicsOfTheMonth = new Drawing();
-		
+	    ArrayList<Drawing> comicsOfTheMonth = new ArrayList<Drawing>();
+	
 		for (Drawing d : drawings) {
 			if (d.getType().equals("Dessin-du-Mois")) nameDrawingOfTheMonth=d.getName();
-			if (d.getType().equals("BD_Accueil")) comicsOfTheMonth=d;
+			if (d.getType().equals("BD_Accueil")) comicsOfTheMonth.add(d);
 		}
 		
 		model.addAttribute("drawingMonth", nameDrawingOfTheMonth);
-		model.addAttribute("comicsMonth", comicsOfTheMonth);
+		if (!comicsOfTheMonth.isEmpty()) model.addAttribute("comicsMonth", comicsOfTheMonth.get(0));
 	    	
     	List<SiteNews> siteNews = newsService.getNews();
     	
@@ -110,7 +113,7 @@ public class WebsiteController {
 	}
 	
 	@GetMapping("/drawings")
-	public String showDrawingsByType(Model model, @RequestParam int type)  {
+	public String showDrawingsByType(Model model, @RequestParam byte type)  {
 		
 		String[] titles = serviceDrawing.getComicsTitles();
 	    model.addAttribute("bdTitles", titles);
@@ -138,48 +141,77 @@ public class WebsiteController {
 	    return "drawings";
 	}
 	    
-	@GetMapping("/bd")
-	public String showComicsByTitle(Model model, @RequestParam int n) {
+	@GetMapping("/comics/{id}")
+	public String showComicsByTitle(@PathVariable("id") final byte id, Model model, @RequestParam byte page) {
 	    	
 		Iterable<Drawing> listDrawings = serviceDrawing.getDrawings();
 		   	
 	    String[] titles = serviceDrawing.getComicsTitles();
-		String titleSelectedBD = titles[n];	
+		String titleSelectedBD = titles[id];	
 		   	
-		ArrayList<String> listofDrawingsOfTheType = new ArrayList<String>();
+		ArrayList<String> pagesOfTheComics = new ArrayList<String>();
 	    	
 	    for (Drawing d : listDrawings) {
-	    	if (d.getType().equals("BD") && d.getTitle().equals(titles[n])) listofDrawingsOfTheType.add(d.getName());
+	    	if (d.getType().equals("BD") && d.getTitle().equals(titles[id])) pagesOfTheComics.add(d.getName());
 	    }
 	    
-	    Collections.sort(listofDrawingsOfTheType);
- 
-	    model.addAttribute("drawings", listofDrawingsOfTheType);    	
+	    Collections.sort(pagesOfTheComics);
+	    
+	   	if (page==pagesOfTheComics.size()) page--;
+		if (page==-1) page=0;
+		
+		int[] pages = new int[pagesOfTheComics.size()];
+		for (int i=0; i<pagesOfTheComics.size(); i++) {
+			pages[i]=i;
+		}
+	    
+	    model.addAttribute("drawings", pagesOfTheComics);    	
 		model.addAttribute("bdTitles", titles);
 		model.addAttribute("title", titleSelectedBD);
+		model.addAttribute("id", id);
+		model.addAttribute("currentPage", page);
+		model.addAttribute("pages", pages);
 			
-		return "bd";
+		return "comics";
 	}
+	
+	@GetMapping("/comicsP")
+	public String showComicsofTheMonth(Model model, @RequestParam byte page) {
 		
-	@GetMapping("/displayImage")
-	public String displayImage(@RequestParam String name, Model model) {
-			
 		String[] titles = serviceDrawing.getComicsTitles();
 	    model.addAttribute("bdTitles", titles);
+	    	
+		Iterable<Drawing> listDrawings = serviceDrawing.getDrawings();		   	
+		ArrayList<String> pagesOfTheComics = new ArrayList<String>();
+	    	
+	    for (Drawing d : listDrawings) {
+	    	if (d.getType().equals("BD_Accueil")) pagesOfTheComics.add(d.getName());
+	    }
+	    
+	    Collections.sort(pagesOfTheComics);
+
+	   	if (page==pagesOfTheComics.size()) page--;
+		if (page==-1 || page==0) page=0;
+		
+	    model.addAttribute("drawings", pagesOfTheComics);
+	    model.addAttribute("currentPage", page);   
+			
+		return "comicsP";
+	}
+	
+	@GetMapping("/displayImage")
+	public String displayDrawingWithHisName(@RequestParam String name, Model model) {
 			
 		Iterable<Drawing> listDrawings = serviceDrawing.getDrawings();
-		String title = null;
 		String type = null;
 			
 		for (Drawing d:listDrawings) {
 			if (d.getName().equals(name)) {
-				title = d.getTitle(); 
 				type = d.getType(); 
 			}
 		}
 		
 		model.addAttribute("drawingName", name);
-		model.addAttribute("drawingTitle", title);
 		model.addAttribute("drawingType", type);
 		
 		return "displayImage";

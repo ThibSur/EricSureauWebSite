@@ -64,7 +64,7 @@ public class FileAWSS3Repository {
 
 	}
 
-    public void delteByName(String fileName) {
+    public void deleteByName(String fileName) {
         LOG.info("Delete file with name {}", fileName);
         amazonS3.deleteObject(s3BucketName, fileName);
     }

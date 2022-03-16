@@ -6,11 +6,13 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.websiteSureau.model.Drawing;
 import com.websiteSureau.service.FilesService;
 
 @Controller
@@ -20,8 +22,7 @@ public class FilesController {
 	FilesService serviceDrawing;
 	    
     @PostMapping("/uploadFile")
-    public String uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("typeDrawing") 
-    						String drawingType, @RequestParam("title") String drawingTitle, RedirectAttributes attributes) throws Exception {
+    public String uploadFile(@RequestParam("file") MultipartFile file, @ModelAttribute Drawing drawing, RedirectAttributes attributes) throws Exception {
     	
     	if (file.isEmpty()) {
             attributes.addFlashAttribute("message1", "Merci de sélectionner une image à sauvegarder.");
@@ -29,7 +30,7 @@ public class FilesController {
     	}
    	 	
     	else {
-	   		 serviceDrawing.save(file, drawingType, drawingTitle);
+	   		 serviceDrawing.save(file, drawing);
 	   		 attributes.addFlashAttribute("message2", "L'image " + file.getOriginalFilename() + " a bien été sauvegardée !"); 
 	   	     return "redirect:/admin";
    	     }

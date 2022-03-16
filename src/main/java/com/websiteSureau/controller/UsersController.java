@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.websiteSureau.model.Drawing;
 import com.websiteSureau.model.MyUser;
+import com.websiteSureau.service.FilesService;
 import com.websiteSureau.service.UserService;
 
 @Controller
@@ -27,6 +30,9 @@ public class UsersController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private FilesService serviceDrawing;
 	
 	@GetMapping("/createUser")
 	public String createUser(Model model) {
@@ -69,6 +75,12 @@ public class UsersController {
 		if (s == "confirm") return new ModelAndView("redirect:/admin/?" + s);
 		else return new ModelAndView("redirect:/updateUser/" + user.getId() + "?" + s);
 	}
+	
+	@PostMapping("/updatNewsletterSubscription")
+	public ModelAndView updatNewsletterSubscription(@ModelAttribute MyUser user) {	
+		userService.updateMyUserNewsletter(user); 	
+		return new ModelAndView("redirect:/account");
+	}
 	 
 	private String getSiteURL(HttpServletRequest request) {
 		String siteURL = request.getRequestURL().toString();
@@ -81,6 +93,9 @@ public class UsersController {
 		Optional<MyUser> s = userService.getUser(id);
 		model.addAttribute("user", s);
 		
+		Iterable<Drawing> drawings = serviceDrawing.getDrawingsByType("Caricatures");
+		model.addAttribute("drawings", drawings);
+		
 		return "formUpdateUser";		
 	}
 	
@@ -90,9 +105,18 @@ public class UsersController {
 	}                                               
 	                                                                                                               
 	@GetMapping("/deleteUser/{id}")
-	public ModelAndView deleteUser(@PathVariable("id") final int id) {
-		userService.deleteUser(id);
-		return new ModelAndView("redirect:/admin");		
+	public ModelAndView deleteUser(@PathVariable("id") final int id, HttpServletRequest request) {
+		String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+		String userRole = userService.getUserRole(currentUser);
+		if (userRole.equals("ROLE_ADMIN")) {
+			userService.deleteUser(id);
+			return new ModelAndView("redirect:/admin");
+		} else {
+			MyUser user = userService.getUserByUserName(currentUser);
+			userService.deleteUser(user.getId());
+			request.getSession().invalidate();
+			return new ModelAndView("redirect:/");
+		}
 	}                                                                                                        
 
 	@GetMapping("/createPassword/{id}")
@@ -137,4 +161,5 @@ public class UsersController {
 	    return "redirect:/resetPassword";
 		
 	}
+
 }

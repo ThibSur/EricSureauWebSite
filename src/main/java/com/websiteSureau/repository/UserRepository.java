@@ -9,5 +9,5 @@ import com.websiteSureau.model.MyUser;
 public interface UserRepository extends JpaRepository<MyUser, Integer> {
 	MyUser findByEmail(String email);
     MyUser findByUserName(String userName);
-
+    Iterable<MyUser> findByNewsletterSubscription(boolean subscription);
 }

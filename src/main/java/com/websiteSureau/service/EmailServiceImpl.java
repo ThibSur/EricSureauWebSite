@@ -9,6 +9,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -19,6 +20,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import com.websiteSureau.model.Message;
 import com.websiteSureau.model.MyUser;
 
+@Primary
 @Service("EmailService")
 public class EmailServiceImpl implements EmailService {
 	
@@ -26,7 +28,7 @@ public class EmailServiceImpl implements EmailService {
     private JavaMailSender emailSender;
 	
 	@Autowired
-	private SpringTemplateEngine thymeleafTemplateEngine;
+	protected SpringTemplateEngine thymeleafTemplateEngine;
 
 	@Override
 	public void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException {

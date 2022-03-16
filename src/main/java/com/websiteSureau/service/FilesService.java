@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +18,7 @@ import com.websiteSureau.repository.DrawingRepository;
 import com.websiteSureau.repository.FileAWSS3Repository;
 
 @Service
+@Transactional
 public class FilesService {
 
 	@Autowired
@@ -32,23 +35,30 @@ public class FilesService {
         return drawingRepository.findById(id);
     }
     
+    public Drawing getDrawingByName( String name) {
+        return drawingRepository.findByName(name);
+    }
+    
+    public ArrayList<Drawing> getDrawingsByType(String type) {
+    	return drawingRepository.findByType(type);
+    }
+    
     public S3ObjectInputStream findByName(String fileName) {
        return s3Repository.findByName(fileName);
     }
 
-	public void save(MultipartFile file, String type, String title) throws Exception {
+	public void save(MultipartFile file, Drawing drawingToSave) throws Exception {
 		
 		// save file in server
 		
-		if (type.equals("BD_Accueil") || type.equals("Dessin-du-Mois")) {
+		if (drawingToSave.getType().equals("BD_Accueil") || drawingToSave.getType().equals("Dessin-du-Mois")) {
 			s3Repository.saveFile(file, "staticimages/public/");
 		}
-		
 		else {
 			s3Repository.saveFile(file, "staticimages/private/");
 		}
 		
-		//save drawing in db with a date in the YY-MM format
+		//save drawing in db with a date in YY-MM format
 		
 		String imageName = file.getOriginalFilename();     		
         Calendar cal = Calendar.getInstance();
@@ -63,40 +73,31 @@ public class FilesService {
         Drawing drawing = new Drawing();
         drawing.setName(imageName);
         drawing.setDate(date);
-        drawing.setTitle(title);
-        drawing.setType(type);
+        drawing.setTitle(drawingToSave.getTitle());
+        drawing.setType(drawingToSave.getType());
+        drawing.setPrivateDrawing(drawingToSave.isPrivateDrawing());
         
         drawingRepository.save(drawing);        
     }
 	
 	public void deleteByName(String name) {
 		
-		Iterable<Drawing> drawings = getDrawings();
+		Drawing d = drawingRepository.findByName(name);
+		drawingRepository.deleteById(d.getId());
 		
-		for (Drawing d : drawings) {
-			
-			// delete file in db	
-			if (d.getName().equals(name)) {
-				drawingRepository.deleteById(d.getId());
+		if (d.getType().equals("Actualité") || d.getType().equals("Dessin-du-Mois")) {
+			s3Repository.deleteByName("staticimages/public/" + name);
+		} else { s3Repository.deleteByName("staticimages/private/" + name); }
 				
-				// delete file in server
-				if (d.getType().equals("Actualité") || d.getType().equals("Dessin-du-Mois")) {
-						s3Repository.deleteByName("staticimages/public/" + name);
-				} else { s3Repository.deleteByName("staticimages/private/" + name); }
-				
-			}
-		}
 	}
 	
 	public String[] getComicsTitles() {
 		
-		Iterable<Drawing> listDrawings = getDrawings();    			
+		Iterable<Drawing> listDrawings = drawingRepository.findByType("BD");    			
 		HashSet<String> hash = new HashSet<String>();  
    	  			
 	   	for (Drawing d:listDrawings) {
-				if (d.getType().equals("BD")) {
-				hash.add(d.getTitle());
-	    		}
+			hash.add(d.getTitle());
 	   	}
 	   	
     	return hash.toArray(new String[hash.size()]);

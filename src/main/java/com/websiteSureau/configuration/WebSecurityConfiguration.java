@@ -41,8 +41,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		 				"/createUser/**", "/sendMessage", "/css/*.css", "/js/*.js", "/comicsP**",
 		 				"/imagesP", "/author", "/displayImage","/img/logos/**", "/fragments", "/legal", "/resetPassword")
 		 				.permitAll()
-		 	.antMatchers("/admin", "/updateUser/*", "/uploadFile", "/deleteFile",
-		 				"/deleteUserPage", "/deleteUser/*", "/saveNews", "/deleteNews")
+		 	.antMatchers("/admin", "/updateUser/*", "/uploadFile", "/deleteFile", "/saveNews", "/deleteNews", "/sendNewsletter", "/deleteUser/*")
 		 				.hasAnyAuthority("ROLE_ADMIN")
 			.anyRequest().hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
 			.and()

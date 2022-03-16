@@ -4,14 +4,15 @@ import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
 import javax.mail.MessagingException;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.websiteSureau.model.Drawing;
 import com.websiteSureau.model.MyUser;
 import com.websiteSureau.repository.UserRepository;
 
@@ -20,6 +21,7 @@ import net.bytebuddy.utility.RandomString;
 
 @Data
 @Service
+@Transactional
 public class UserService {
 	
     @Autowired
@@ -34,10 +36,22 @@ public class UserService {
         return userRepository.findById(id);
     }
     
+    public MyUser getUserByUserName(final String name) {
+    	return userRepository.findByUserName(name);
+    }
+    
     public Iterable<MyUser> getUsers() {
         return userRepository.findAll();
     }
+    
+    public Iterable<MyUser> getUsersBySubscriptionTrue() {
+        return userRepository.findByNewsletterSubscription(true);
+    }
 
+    public String getUserRole(String name) {
+    	return userRepository.findByUserName(name).getAuthority();	
+    }
+    
     public void deleteUser(final int id) {
     	userRepository.deleteById(id);
     }
@@ -73,6 +87,16 @@ public class UserService {
 					currentUser.setName(name);
 				}
 				
+				Drawing drawing = user.getDrawing();
+				if(drawing != currentUser.getDrawing()) {
+					currentUser.setDrawing(drawing);
+				}
+				
+				boolean newsletterSubscription = user.isNewsletterSubscription();
+				if (newsletterSubscription != currentUser.isNewsletterSubscription()) {
+					currentUser.setNewsletterSubscription(newsletterSubscription);
+				}
+				
 				if (currentUser.getEnabled()==1 && user.getEnabled()==0) {
 					currentUser.setEnabled(user.getEnabled());
 			    	currentUser.setVerificationCode(null);
@@ -99,23 +123,33 @@ public class UserService {
 			   	return statutMethodSave;
 		   	}
     }
+    
+    public void updateMyUserNewsletter(MyUser user) {
+    		
+    		MyUser currentUser = getUserByUserName(user.getUserName());
+        		
+		    boolean newsletterSubscription = user.isNewsletterSubscription();
+			if (newsletterSubscription != currentUser.isNewsletterSubscription()) {
+				currentUser.setNewsletterSubscription(newsletterSubscription);
+			}
+				
+			userRepository.save(currentUser);
+    }
 
     public boolean resetPassword(MyUser user, String siteURL) throws UnsupportedEncodingException, MessagingException {
     	
     	boolean result = false;
     	
-    	Iterable<MyUser> listUsers = getUsers();
+    	MyUser u = userRepository.findByUserName(user.getEmail());
     	
-    	for (MyUser u : listUsers) {
-    		if (u.getEmail().equals(user.getEmail()) && u.getEnabled()==1) {
-    			String randomCode = RandomString.make(64);
-    			u.setVerificationCode(randomCode);
-    			mailService.sendResetPasswordEmail(u, siteURL);
-    			userRepository.save(u);
-    			result=true;
-    			break;
-    		}
-    	}  	
+    	if (u.getEnabled()==1) {
+    		String randomCode = RandomString.make(64);
+    		u.setVerificationCode(randomCode);
+    		mailService.sendResetPasswordEmail(u, siteURL);
+    		userRepository.save(u);
+    		result=true;
+    	}
+    	 	
     	return result;
     }
     
@@ -145,21 +179,7 @@ public class UserService {
 			   	return statutMethodSave;
 		   	}
 	}
-    
-    public String getUserRole() {
-    	
-    	final String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-	
-    	String role = null;
-    	
-		Iterable<MyUser> listUsers = getUsers();
-		for (MyUser u : listUsers) {
-			if (u.getUserName().equals(currentUser))
-				role = u.getAuthority();
-		}
-		
-		return role;
-    }
+
     
     @Async
 	public void activateUser(MyUser user, String siteURL) throws UnsupportedEncodingException, MessagingException {
@@ -202,19 +222,18 @@ public class UserService {
 		
 		 //Deleting verification code after a delay
 
-		Iterable<MyUser> listUsers = getUsers();
+		MyUser us = userRepository.findByUserName(user.getEmail());
 		
 		System.out.println("Execute deleteVerificationCode asynchronously started - " + Thread.currentThread().getName());
 			 
 		try {
 			Thread.sleep(time * 1000);
-				for (MyUser us : listUsers) {
-					if (us.getEmail().equals(user.getEmail()) && us.getVerificationCode()!=null) {
-						us.setVerificationCode(null);
-						userRepository.save(us);	
-						break;
-			    	}
-				}	
+			
+				if (us.getVerificationCode()!=null) {
+					us.setVerificationCode(null);
+					userRepository.save(us);	
+				}
+
 			Thread.currentThread().interrupt();
 			
 			System.out.println("Execute method deleteVerificationCode finished - " + Thread.currentThread().getName());

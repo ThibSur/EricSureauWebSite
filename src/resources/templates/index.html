@@ -38,11 +38,11 @@
 						</p>
 							 	<ul>
 				    				<li th:each="title : ${bdTitles}"> 
-				    					<a th:href="'/bd?n=' + ${titleStat.index}" th:text="${bdTitles[titleStat.index]}"></a> 
+				    					<a th:href="'/comics/' + ${titleStat.index} + '?page=0' + '#bd'" th:text="${bdTitles[titleStat.index]}"></a> 
 				    				</li>
 						    	</ul>
 						 <p>
-						 	Enfin, des caricatures peuvent être consultées dans la catégorie <a href = "/caricatures"> caricatures</a>.
+						 	Enfin, des caricatures peuvent être consultées dans la catégorie <a href = "/drawings?type=4"> caricatures</a>.
 						</p>
 						<p>
 							Vous pouvez accéder gratuitement à l'ensemble de ces dessins en vous <a href = "/createUser" > inscrivant</a> sur le site !
@@ -50,14 +50,15 @@
 						<p>
 							Alors bienvenue et bonne lecture à vous.
 						</p>
+						
 					</article>
 
-					<aside id = "comicsp1">
+					<aside id = "comicsp1"  th:if="${comicsMonth ne null}">
 						
 						<p> <strong th:text="${comicsMonth.title}"> </strong> </p>
 						
 						<figure>
-							<a th:href="@{'/displayImage' +'?name=' + ${comicsMonth.name}}">  
+							<a th:href="@{/comicsP?page=0#bd}">  
 							<img id="comicsMonth" th:src="@{'/imagesP?name=' + ${comicsMonth.name}}" th:alt="${comicsMonth.name}" title="Cliquez pour agrandir" /></a>
 						</figure>
 						
@@ -71,10 +72,10 @@
 
 				<div id="news">
 
-					<figure>
+					<figure th:if="${drawingMonth ne null}">
 						<figcaption> Dessin du mois </figcaption>
-						<a th:href="@{'/displayImage' +'?name=' + ${drawingMonth}}">  
-						<img id="drawingMonth" th:src="@{'/imagesP?name=' + ${drawingMonth}}" th:alt="${drawingMonth}" title="Cliquez pour agrandir" /></a>
+						<a th:href="@{'/displayImage' +'?name=' + ${drawingMonth.name}}">  
+						<img id="drawingMonth" th:src="@{'/imagesP?name=' + ${drawingMonth.name}}" th:alt="${drawingMonth.name}" title="Cliquez pour agrandir" /></a>
 					</figure>
 					
 					<article th:each="date: ${siteNewsDate}"> 

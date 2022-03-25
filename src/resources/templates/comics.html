@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<link th:href="@{/css/style.css}" rel="stylesheet" />
+		<link rel="icon" th:href="@{/img/logos/ES.png}">
+		<title th:text="${title}"> </title>
+	</head>
+<body>
+		<div th:replace="fragments :: header" th:with="bdTitles=${bdTitles}"></div>
+		
+		<section>
+			
+			<div id = "bd">
+				<a class="left" th:href="'/comics/' + ${id} + '?page=' + ${currentPage-1} + '#bd'">&#10094;</a>		
+				<figure>
+					<img th:src="@{'/images' +'?name=' + ${drawings[currentPage]}}" th:alt="${title}" />
+				</figure>
+				<a class="right" th:href="'/comics/' + ${id} + '?page=' + ${currentPage+1} + '#bd'">&#10095;</a>
+			</div>
+			<div id = "bd2">
+				<select th:name="page" id="page" onchange="location = this.value;">
+					<option selected value="" th:text="'page ' + ${currentPage}"> </option>
+					<option th:each="p: ${pages}" th:value="'/comics/' + ${id} + '?page=' + ${p} + '#bd'" th:text="'Page ' + ${p}" > </option>
+				</select>		
+			</div>
+		
+		</section>
+
+		<th:block th:insert="~{fragments :: footer}"></th:block> 
+
+</body>
+</html>

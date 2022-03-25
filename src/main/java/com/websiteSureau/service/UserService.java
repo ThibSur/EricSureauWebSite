@@ -25,10 +25,10 @@ import net.bytebuddy.utility.RandomString;
 public class UserService {
 	
     @Autowired
-	protected UserRepository userRepository;
+	private UserRepository userRepository;
 
 	@Autowired
-	protected EmailServiceImpl mailService;
+	private EmailServiceImpl mailService;
     
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
@@ -46,6 +46,10 @@ public class UserService {
     
     public Iterable<MyUser> getUsersBySubscriptionTrue() {
         return userRepository.findByNewsletterSubscription(true);
+    }
+    
+    public Optional<MyUser> getUserByDrawingID(int drawingID) {
+        return userRepository.findByDrawingID(drawingID);
     }
 
     public String getUserRole(String name) {
@@ -65,75 +69,55 @@ public class UserService {
 	   	mailService.sendNewAccountUserEmail(user,siteURL);
 	}
     
-    public String updateUser(MyUser user, String siteURL) throws UnsupportedEncodingException, MessagingException {
+    public void updateUser(MyUser user, String siteURL) throws UnsupportedEncodingException, MessagingException {
     	
     	//for updating an user and/or activating a new user.
     	
-    	String statutMethodSave = "confirm";	
-	   	
-    	Optional<MyUser> e = getUser(user.getId());
-    	
-    	if(e.isPresent()) {
-    		
-    		MyUser currentUser= e.get();
+    	MyUser currentUser= getUser(user.getId()).get();
 
-				String lastName = user.getLastName();
-				if(lastName != currentUser.getLastName()) {
-					currentUser.setLastName(lastName);
-				}
-				
-				String name = user.getName();
-				if(name != currentUser.getName()) {
-					currentUser.setName(name);
-				}
-				
-				Drawing drawing = user.getDrawing();
-				if(drawing != currentUser.getDrawing()) {
-					currentUser.setDrawing(drawing);
-				}
-				
-				boolean newsletterSubscription = user.isNewsletterSubscription();
-				if (newsletterSubscription != currentUser.isNewsletterSubscription()) {
-					currentUser.setNewsletterSubscription(newsletterSubscription);
-				}
-				
-				if (currentUser.getEnabled()==1 && user.getEnabled()==0) {
-					currentUser.setEnabled(user.getEnabled());
-			    	currentUser.setVerificationCode(null);
-				}
-				
-				if (currentUser.getEnabled()==0 && user.getEnabled()==1) {
-				  	
-			    	String randomCode = RandomString.make(64);
-			    	
-			    	currentUser.setVerificationCode(randomCode);
-					currentUser.setAuthority("ROLE_USER");
-					currentUser.setEnabled(user.getEnabled());
-					
-					mailService.sendVerificationEmail(currentUser, siteURL);
-				}
-				
-		   		userRepository.save(currentUser);
-		   		
-		   		return statutMethodSave;
-	
-		   		
-		   	} else { 
-			   	statutMethodSave = "error1";
-			   	return statutMethodSave;
-		   	}
-    }
-    
-    public void updateMyUserNewsletter(MyUser user) {
-    		
-    		MyUser currentUser = getUserByUserName(user.getUserName());
-        		
-		    boolean newsletterSubscription = user.isNewsletterSubscription();
+			String lastName = user.getLastName();
+			if(lastName != currentUser.getLastName()) {
+				currentUser.setLastName(lastName);
+			}		
+			String name = user.getName();
+			if(name != currentUser.getName()) {
+				currentUser.setName(name);
+			}		
+			Drawing drawing = user.getDrawing();
+			if(drawing != currentUser.getDrawing()) {
+				currentUser.setDrawing(drawing);
+			}		
+			boolean newsletterSubscription = user.isNewsletterSubscription();
 			if (newsletterSubscription != currentUser.isNewsletterSubscription()) {
 				currentUser.setNewsletterSubscription(newsletterSubscription);
+			}			
+			if (currentUser.getEnabled()==1 && user.getEnabled()==0) {
+				currentUser.setEnabled(user.getEnabled());
+			    currentUser.setVerificationCode(null);
+			}		
+			if (currentUser.getEnabled()==0 && user.getEnabled()==1) {			  	
+			    String randomCode = RandomString.make(64);		    	
+			    currentUser.setVerificationCode(randomCode);
+				currentUser.setAuthority("ROLE_USER");
+				currentUser.setEnabled(user.getEnabled());					
+				mailService.sendVerificationEmail(currentUser, siteURL);
 			}
-				
+			
+		   	userRepository.save(currentUser);   		    		
+    }
+    
+    public String updateMyUserNewsletter(MyUser user) {
+    		
+    	MyUser currentUser = getUserByUserName(user.getUserName());
+    	String message = "Votre inscription à la newsletter a bien été modifiée";     		
+		boolean newsletterSubscription = user.isNewsletterSubscription();
+		    
+		if (newsletterSubscription != currentUser.isNewsletterSubscription()) {
+			currentUser.setNewsletterSubscription(newsletterSubscription);
 			userRepository.save(currentUser);
+			return message;
+				
+		} else { return null; }	
     }
 
     public boolean resetPassword(MyUser user, String siteURL) throws UnsupportedEncodingException, MessagingException {
@@ -179,7 +163,6 @@ public class UserService {
 			   	return statutMethodSave;
 		   	}
 	}
-
     
     @Async
 	public void activateUser(MyUser user, String siteURL) throws UnsupportedEncodingException, MessagingException {

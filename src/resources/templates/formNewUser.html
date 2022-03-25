@@ -48,6 +48,11 @@
 						type="email" th:field="*{email}" class="form-control" id="mailInput"
 						aria-describedby="mailHelp" placeholder="Saisir l'adresse email" required> 
 				</div>
+				
+				<div>
+				    <input type="checkbox" th:field="*{newsletterSubscription}" id="subscribeNews" value="true">
+				    <label for="subscribeNews">Je m'inscris à la newsletter du site.</label>
+				</div>
 					
 				<button type="submit" class="btn btn-primary">Créer</button>
 			</form>
@@ -66,6 +71,6 @@
 		</div>
 	</div>
 	</section>
-
+	
 </body>
 </html>

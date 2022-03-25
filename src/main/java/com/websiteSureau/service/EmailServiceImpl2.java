@@ -30,8 +30,10 @@ public class EmailServiceImpl2 extends EmailServiceImpl {
     	
         Map<String, Object> model = new HashMap<String, Object>();
         
+        String[] listOfNewsletterParaph = newsletter.getTexte().split("\n");
+        
         model.put("newsletterTitle", newsletter.getNewsTitle());
-        model.put("newsletterText", newsletter.getTexte());
+        model.put("newsletterParaph", listOfNewsletterParaph);
         
         for (MyUser user: listOfEmailUsers) {
 	        model.put("nameUser", user.getName());

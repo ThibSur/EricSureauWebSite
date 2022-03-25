@@ -22,21 +22,39 @@ footer {
 	padding-top: 15px;
 	padding-bottom: 10px;
 	display: flex;
-	justify-content: space-between;
 	background:#ccc;
 	font-style : italic;
-	border-top: 2px solid blue;
+	border-top: 2px solid rgb(18, 9, 110);
 	position: absolute;
 	bottom: 0;
 	left: 0;
 	right: 0;
+	align-items: center;
+  	justify-content: center;
+  	flex-flow: column wrap
+}
+
+#footerMenuIcons {
+	max-width: 500px;
+	margin-bottom: 5px;
+}
+
+#footerMenuIcons img {
+	height: 40px;
+}
+
+#footerMenuText {
+	border-top: 1px solid rgb(18, 9, 110);
+	text-align: end;
+	font-size: 0.8em;
+	width: 90%;
 }
 
 section {
 	width: 85%;
 	margin: auto;
 	color: white;
-	padding-bottom: 6rem;
+	padding-bottom: 8rem;
 }
 
 #logo {
@@ -85,6 +103,10 @@ section {
 	font-size: 1.2em;
 }
 
+#news p {
+	white-space: pre-wrap;
+}
+
 #author {
 	margin-top: 50px;
 	display: flex;
@@ -102,8 +124,7 @@ section {
 	border-radius: 60px 60px;
    	padding: 20px 20px 20px 20px;
    	background: rgb(18, 9, 110);
-   	font-size: 1.2em;
-   	font-family: Pristina, Brush Script MT, Informal Roman, Times New Roman;
+   	font-style: italic;
 }
 
 #author img {
@@ -119,15 +140,30 @@ table img {
 }
 
 #displayImage {
-	width: 80%;
 	display: flex;
-	flex-direction: column;
-	align-items: center;
   	justify-content: center;
 }
 
-#displayImage h4 {
-	max-width: 300px;
+#displayImage img {
+	max-height: 99vh; 
+	max-width: 100%;
+}
+
+#displayImage #exit {
+	text-align: center;
+	position: relative;
+	right: 30px;
+	height: 12%;
+	width: 30px;
+	font-family: sans-serif;
+	font-size: 2em;
+	text-decoration: none;
+  	color: orangered;
+}
+
+#displayImage #exit:hover {
+  color: orangered;
+  background-color: blanchedalmond;
 }
 
 #caricatures img {
@@ -135,9 +171,26 @@ table img {
 	max-width: 400px;
 }
 
+#account {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+#account img {
+	width: 200px;
+	height: auto;
+	border-radius: 100px 100px;
+	margin-bottom: 60px;
+}
+
+#account2 {
+	color: rgb(18, 9, 95);
+}
+
 header h1 {
 	font-family: Chiller, Arial Black, Times New Roman, sans-serif;
-	color: rgb(45, 89, 154);
+	color: rgb(31, 75, 140);
 	text-shadow: 1px 1px 2px black;
 	font-size: 2.5em;
 }
@@ -152,7 +205,7 @@ header h1 {
   display: block;
   color: #f2f2f2;
   text-align: center;
-  padding: 14px 16px;
+  padding: 17px 15px;
   text-decoration: none;
   font-size: 1.2em;
 }
@@ -160,6 +213,24 @@ header h1 {
 .active {
   background-color: rgb(45, 89, 154);
   color: white;
+}
+
+#log {
+	display: flex;
+	padding-top: 4px;
+	padding-left: 0;
+	float: right;
+	height: 38px;
+}
+
+#log img {
+	height: 50px;
+	border-radius: 100px 100px;
+}
+
+#userName {
+	color: #F3FF84;
+	padding: 13px;
 }
 
 .dropdown {
@@ -172,7 +243,7 @@ header h1 {
   border: none;
   outline: none;
   color: white;
-  padding: 14px 16px;
+  padding: 17px 15px;
   background-color: inherit;
   font-family: inherit;
   margin: 0;
@@ -190,7 +261,7 @@ header h1 {
 .dropdown-content a {
   float: none;
   color: black;
-  padding: 12px 16px;
+  padding: 17px 15px;
   text-decoration: none;
   display: block;
   text-align: left;
@@ -208,15 +279,6 @@ header h1 {
 
 .dropdown:hover .dropdown-content {
   display: block;
-}
-
-a {
-    text-decoration: none;
-    color: rgb(18, 9, 95);
-}
-
-a:hover {
-   color: green;
 }
 
 #index {
@@ -241,25 +303,44 @@ a:hover {
 }
 
 #adminpage .container {
-	padding-left: 50px
+	text-align: left;
+}
+
+#alert-primary {
+	text-align: center;
+	font-size: 1.2em;
+	font-family: Times New Roman;
+}
+
+#usersManage {
+	padding-left: 50px;
+	margin-bottom: 50px;
 }
 
 #scroller {
-	max-width:700px;
+	max-width:90%;
 	height:300px; 
 	overflow:auto;
+}
+
+#scroller td {
+	padding-left: 10px;
+}
+
+#scroller th {
+	padding-left: 10px;
+	padding-bottom: 10px;
 }
 
 #intro aside {
 	position: relative;
 	box-shadow: 0px 2px 5px #1c1a19;
-	max-height: 500px;
+	margin: auto;
 	min-width: 300px;
 	border-radius: 60px 60px;
    	padding: 10px 10px 10px 10px;
    	background: rgb(18, 9, 110);
-   	font-size: 1.2em;
-   	font-family: Pristina, Brush Script MT, Informal Roman, Times New Roman;
+   	font-style: italic;
    	text-align: center;
 }
 
@@ -297,18 +378,21 @@ h3 {
 	font-size: 1.4em;
 }
 
+footer a {
+    text-decoration: none;
+}
+
+footer a:hover {
+	color: orangered;	
+}
+
 Section a {
     text-decoration: none;
     color: blanchedalmond;
 }
 
 Section a:hover {
-   color: orangered;
-}
-
-#copyright {
-	display: flex;
-	text-align: left;
+	color: orangered;
 }
 
 footer a {
@@ -317,25 +401,41 @@ footer a {
 
 #bd {
 	display: flex;
-	flex-wrap: nowrap;
 	margin-top: 20px;
+}
+
+#bd img {
+	width: 100%;
 }
 
 #bd figcaption {
 	color: rgb(18, 9, 95);
 	display: block;
 	margin-left: auto;
-    margin-right: auto;
-    width: 100px;
+	margin-right: auto;
+	width: 100px;
 }
 
-#bd figure {
-	width: 80%;
-	margin: auto;
+#bd a {
+	text-align: center;
+	font-size: 2.5em;
+	padding: 50% 10px 50% 10px;
 }
 
-#bd img {
-	width: 100%;
+#bd a:hover {
+   color: orangered;
+   background-color: blanchedalmond;
+}
+
+#bd2 {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}
+
+#bd2 form {
+	width: 150px;
 }
 
 #caricatures {
@@ -346,6 +446,7 @@ footer a {
 #filesManage {
 	display:flex;
 	justify-content: space-around;
+	margin-bottom: 50px;
 }
 
 #newsManage {
@@ -367,20 +468,25 @@ form button {
 	text-align: center;
 	cursor: pointer;
 	margin-top :10px;
-	margin-left: 10px;
+	margin-bottom :10px;
 }
 
 form div {
-	max-width: 500px;
 	margin-top :10px;
-	margin-left: 10px;
 }
 
 #forms {
-	max-width: 550px;
+	max-width: 600px;
 	border : 2px solid black;
 	padding : 0px 20px 40px 20px;
 	text-align: center;
+	color: rgb(18, 9, 95);
+	font-family: Trebuchet MS, sans-serif;
+}
+
+#forms img{
+	max-width: 400px;
+	max-height: 250px;
 }
 
 #drawings {
@@ -418,6 +524,10 @@ form div {
 		font-size: 1.1em;
 		padding-right: 0px;
 	}
+	
+	#news article {
+		width: 90%;
+	}
 
    	#intro aside {
 		max-height: 100%;
@@ -438,10 +548,21 @@ form div {
 	.topnav a {
 		float: none;
 		display: block;
-		text-align: left;
-		font-size: 1.2em;
+		text-align: center;
+		font-size: 1.5em;
 	}
-
+		
+	#log {
+		float: none;
+		display: block;
+		text-align: center;
+		font-size: 1.5em;
+	}
+	
+	#userName {
+		display: none;
+	}
+	
 	.topnav .dropdown {
 		float: none;
 	}
@@ -451,9 +572,10 @@ form div {
 	}
 	
 	.topnav .dropdown .dropbtn {
+		font-size: 1.5em;
 	    display: block;
 	    width: 100%;
-	    text-align: left;
+	    text-align: center;
   	}
 
   	form {
@@ -466,7 +588,6 @@ form div {
 
   	.form-group label {
 		width: 100%;
-		display: block;
 	}
 	
 	.form-group input {
@@ -480,6 +601,14 @@ form div {
 	}
 
 	form button {
+		font-size: 1.2em;
+	}
+	
+	#adminpage .container {
+		display: inline;
+	}
+	
+	#adminpage h4 {
 		font-size: 1.2em;
 	}
 

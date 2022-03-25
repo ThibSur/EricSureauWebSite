@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>Modification</title>
+		<link th:href="@{/css/style.css}" rel="stylesheet" />
+		<link rel="icon" th:href="@{/img/logos/ES.png}">
+	</head>
+<body>
+
+	<header>				
+		<div id="logo">
+			<h1> LES PETITS DESSINS d'ERIC SUREAU </h1>
+			<img th:src="@{/img/logos/ES.png}" alt="Logo"/> 
+		</div>
+		<nav class="topnav" id="myTopnav">
+			<a href="/" class="active">Retour au site</a>       
+		</nav>  
+				  
+	</header>    
+	
+	<section id="forms">
+	<div class="container special">
+
+		<h2 class="h2">Modification d'un dessin</h2>
+		
+		<div>
+					       			       	
+		    <figure>
+				<img th:if="${drawing.type eq 'Dessin-du-Mois'}" th:src="@{'/imagesP' +'?name=' + ${drawing.name}}"/>
+				<img th:if="${drawing.type ne 'Dessin-du-Mois'}" th:src="@{'/images' +'?name=' + ${drawing.name}}"/>
+				<figcaption th:text="${drawing.name}"></figcaption>
+			</figure>
+				
+			<form method="post"
+				th:action="@{/updateDrawing}" enctype="multipart/form-data" th:object="${drawing}">
+				
+				<div class="form-group">
+					<input type="hidden" th:field="*{id}" class="form-control">
+				</div>
+				
+				<div class="form-group">
+					<input type="hidden" th:field="*{name}" class="form-control">
+				</div>
+				
+				<div class="form-group">
+					<label for="type">Type</label> 
+					<select th:field="*{type}" name="typeDrawing" id="typeDrawing">
+						<option value="Actualités">Actualités</option>
+						<option value="Environnement">Environnement</option>
+						<option value="Sport">Sport</option>
+						<option value="Personnel">Personnel</option>
+						<option value="Caricatures">Caricatures</option>
+						<option value="BD">Bande dessinée</option>
+						<option value="Dessin-du-Mois">Dessin du mois</option>
+					</select>
+				</div>					
+
+				<div class="form-group">
+					<label for="title">Titre</label> 
+					<input
+						type="text" th:field="*{title}" class="form-control" id="titleInput"
+						aria-describedby="titleHelp" placeholder="Saisir le titre"> 
+				</div>
+				
+				<div>
+				    <label for="date">Date </label>
+					<input type="date" th:field="*{date}" id="date">    
+				</div>
+		       	
+		       	<div>
+				    <label for="privateDrawing">Dessin privé : </label>
+					<input type="checkbox" th:field="*{privateDrawing}" id="privateDrawing" value="true">    
+				</div>
+					
+		       	<div class="form-group">
+					<input type="file" name="file" class="form-control-file">
+				</div>
+				
+				<button type="submit" class="btn btn-primary">Modifier</button>
+				
+			</form>
+			
+			<form id="return" method="get" th:action="@{/admin}">
+				<button type="submit" class="btn btn-primary">Retour</button>
+			</form>
+
+		       	
+		</div>
+
+	</div>
+	</section>
+		
+</body>
+</html>

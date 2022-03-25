@@ -1,6 +1,10 @@
 package com.websiteSureau.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.websiteSureau.model.MyUser;
@@ -10,4 +14,9 @@ public interface UserRepository extends JpaRepository<MyUser, Integer> {
 	MyUser findByEmail(String email);
     MyUser findByUserName(String userName);
     Iterable<MyUser> findByNewsletterSubscription(boolean subscription);
+    
+    @Query(
+    	value = "SELECT * FROM users WHERE drawing_id = :id", 
+    	nativeQuery = true)
+    Optional<MyUser> findByDrawingID(@Param("id") int drawingID);
 }

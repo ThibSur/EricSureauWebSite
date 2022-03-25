@@ -13,18 +13,18 @@ public class CalendarService {
     	
 		Map<String, String> monthsInLettersMap = new HashMap<String, String>() ;
 		
-			monthsInLettersMap.put("00", "Janvier");
-			monthsInLettersMap.put("01", "Février");
-			monthsInLettersMap.put("02", "Mars");
-			monthsInLettersMap.put("03", "Avril");
-			monthsInLettersMap.put("04", "Mai");
-			monthsInLettersMap.put("05", "Juin");
-			monthsInLettersMap.put("06", "Juillet");
-			monthsInLettersMap.put("07", "Août");
-			monthsInLettersMap.put("08", "Septembre");
-			monthsInLettersMap.put("09", "Octobre");
-			monthsInLettersMap.put("10", "Novembre");
-			monthsInLettersMap.put("11", "Décembre");
+			monthsInLettersMap.put("01", "Janvier");
+			monthsInLettersMap.put("02", "Février");
+			monthsInLettersMap.put("03", "Mars");
+			monthsInLettersMap.put("04", "Avril");
+			monthsInLettersMap.put("05", "Mai");
+			monthsInLettersMap.put("06", "Juin");
+			monthsInLettersMap.put("07", "Juillet");
+			monthsInLettersMap.put("08", "Août");
+			monthsInLettersMap.put("09", "Septembre");
+			monthsInLettersMap.put("10", "Octobre");
+			monthsInLettersMap.put("11", "Novembre");
+			monthsInLettersMap.put("12", "Décembre");
 		
 		String[] dateInLetters = new String [listOfDate.size()];	
 		listOfDate.toArray(dateInLetters);

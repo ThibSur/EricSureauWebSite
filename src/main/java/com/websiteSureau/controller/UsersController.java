@@ -16,12 +16,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.websiteSureau.model.Drawing;
 import com.websiteSureau.model.MyUser;
-import com.websiteSureau.service.FilesService;
+import com.websiteSureau.service.DrawingService;
 import com.websiteSureau.service.UserService;
 
 @Controller
@@ -32,7 +33,7 @@ public class UsersController {
 	private UserService userService;
 	
 	@Autowired
-	private FilesService serviceDrawing;
+	private DrawingService serviceDrawing;
 	
 	@GetMapping("/createUser")
 	public String createUser(Model model) {
@@ -56,7 +57,6 @@ public class UsersController {
     			break;
     		}
     	}
-    	
     	if (userSaved == true) {
     		userService.saveUser(user, getSiteURL(request));
     		userService.activateUser(user, getSiteURL(request));
@@ -67,18 +67,31 @@ public class UsersController {
 	}
 	
 	@PostMapping("/updateUser")
-	public ModelAndView updateUser(@ModelAttribute MyUser user, HttpServletRequest request) 
+	public ModelAndView updateUser(@ModelAttribute MyUser user, @RequestParam("drawingID") int drawingID, 
+			RedirectAttributes attributes, HttpServletRequest request) 
 			 throws UnsupportedEncodingException, MessagingException {
 		
-		String s = userService.updateUser(user, getSiteURL(request)); 
-		
-		if (s == "confirm") return new ModelAndView("redirect:/admin/?" + s);
-		else return new ModelAndView("redirect:/updateUser/" + user.getId() + "?" + s);
+		Optional<Drawing> drawingUser = serviceDrawing.getDrawing(drawingID);
+		if (drawingUser.isPresent()) {
+			Optional<MyUser> userWithSameDrawing = userService.getUserByDrawingID(drawingID);
+			if (userWithSameDrawing.isEmpty() || userWithSameDrawing.get().getId()==user.getId()) {
+			user.setDrawing(drawingUser.get()); 
+			userService.updateUser(user, getSiteURL(request));
+			attributes.addFlashAttribute("message2", "L'utilisateur a bien été modifié.");
+			} else {
+			attributes.addFlashAttribute("message1", "Modification impossible : la caricature est déjà associée à un autre utilisateur !");
+			}
+		} else {
+		userService.updateUser(user, getSiteURL(request));
+		attributes.addFlashAttribute("message2", "L'utilisateur a bien été modifié.");
+		}
+		return new ModelAndView("redirect:/admin/");
 	}
 	
 	@PostMapping("/updatNewsletterSubscription")
-	public ModelAndView updatNewsletterSubscription(@ModelAttribute MyUser user) {	
-		userService.updateMyUserNewsletter(user); 	
+	public ModelAndView updatNewsletterSubscription(@ModelAttribute MyUser user, RedirectAttributes attributes) {	
+		String message = userService.updateMyUserNewsletter(user);
+		attributes.addFlashAttribute("message", message);
 		return new ModelAndView("redirect:/account");
 	}
 	 
@@ -93,6 +106,15 @@ public class UsersController {
 		Optional<MyUser> s = userService.getUser(id);
 		model.addAttribute("user", s);
 		
+		int drawingUserID = 0;
+		String drawingUserName = "Aucune";
+		if (userService.getUser(id).get().getDrawing()!=null) {
+			drawingUserID = userService.getUser(id).get().getDrawing().getId();
+			drawingUserName = userService.getUser(id).get().getDrawing().getName();
+			}
+		model.addAttribute("drawingUserID", drawingUserID);
+		model.addAttribute("drawingUserName", drawingUserName);
+		
 		Iterable<Drawing> drawings = serviceDrawing.getDrawingsByType("Caricatures");
 		model.addAttribute("drawings", drawings);
 		
@@ -104,7 +126,7 @@ public class UsersController {
 		return "formDeleteUser";		
 	}                                               
 	                                                                                                               
-	@GetMapping("/deleteUser/{id}")
+	@PostMapping("/deleteUser/{id}")
 	public ModelAndView deleteUser(@PathVariable("id") final int id, HttpServletRequest request) {
 		String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
 		String userRole = userService.getUserRole(currentUser);

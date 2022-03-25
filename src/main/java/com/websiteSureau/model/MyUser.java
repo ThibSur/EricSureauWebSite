@@ -41,12 +41,10 @@ public class MyUser {
     @Column(name = "verification_code", length = 64)
     private String verificationCode;
     
+    private boolean newsletterSubscription;
+    
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "drawing_id", referencedColumnName = "id")
     private Drawing drawing;
-    
-    private boolean newsletterSubscription;
-    
-    
     
 }

@@ -4,29 +4,22 @@
 		<meta charset="UTF-8">
 		<link th:href="@{/css/style.css}" rel="stylesheet" />
 		<link rel="icon" th:href="@{/img/logos/ES.png}">
-		<title th:text="${drawingType}"> </title>
+		<title th:text="${drawing.type}"> </title>
 	</head>
 	
-<body>
-		<div th:replace="fragments :: header" th:with="bdTitles=${bdTitles}"></div>  
-		
-		<section id="displayImage">
-			
-			<h4 th:text="${drawingTitle}"></h4>
-			
-			<div th:switch="${drawingType}">
+<body>		
+		<div id="displayImage" th:if="${drawing.privateDrawing} eq false">
 				
-				<a href="javascript:history.back()">		
-					<img th:case="'BD_Accueil'" th:src="@{'/imagesP' +'?name=' + ${drawingName}}" style="max-width: 100%;"/>
-					<img th:case="'Dessin-du-Mois'" th:src="@{'/imagesP' +'?name=' + ${drawingName}}" style="max-height: 100vh; max-width: 100%;"/>
-					<img th:case="*" th:src="@{'/images' +'?name=' + ${drawingName}}" style="max-height: 100vh; max-width: 100%;"/>
-				</a>
-							
-			</div>
+			<a href="javascript:history.back()"  th:switch="${drawing.type}">		
+				<img th:case="'Dessin-du-Mois'" th:src="@{'/imagesP' +'?name=' + ${drawing.name}}"/>
+				<img th:case="*" th:src="@{'/images' +'?name=' + ${drawing.name}}"/>
+			</a>
+				
+			<a id="exit" href="javascript:history.back()">		
+					x
+			</a>							
 	
-		</section>
-		
-		<th:block th:insert="~{fragments :: footer}"></th:block> 
-		
+		</div>
+				
 </body>
 </html>

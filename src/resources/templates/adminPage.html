@@ -14,39 +14,44 @@
 			
 				<h2 class="h2">Administrateur</h2>
 				
+				<p th:text="${message1}" th:if="${message1 ne null}" id="alert-primary" style="color: rgb(242, 82, 82);"></p>
+				<p th:text="${message2}" th:if="${message2 ne null}" id="alert-primary" style="color: #F3FF84;"></p>	
+				
 				<h3>Gestion des abonnés</h3>
 
-				<div class="container">
+				<div id="usersManage" class="container">
 									
 					<div id="scroller">
-						       			
-		       			<div th:if="${param.confirm}" class="alert alert-error">
-		        		<p style="font-size: 20; color: #F3FF84;"> L'abonné a bien été modifié </p>
-		       			</div>
 						
 						<table>
-
 							<tbody>
 								<tr th:if="${users.empty}">
 									<td colspan="3">Aucun abonné en base de données</td>
 								</tr>
+								<tr>
+								    <th>Prénom</th>
+								    <th>Nom</th>
+								    <th>Mail</th>
+								    <th>Newsletter</th>
+								    <th>Caricature</th>
+								</tr>
 								<tr th:each="user: ${users}">
-									<td><span th:text="${user.name}"> Prénom </span></td>
-									<td><span th:text="${user.lastName}"> Nom </span></td>
+									<td><span th:text="${user.name}"> </span></td>
+									<td><span th:text="${user.lastName}"> </span></td>
 									<td><span th:text="${user.email}"> Mail </span></td>
+									<td><span th:if="${user.newsletterSubscription} eq true"> Abonné </span></td>
+									<td><span th:if="${user.drawing} != null" th:text=${user.drawing.name}> </span></td>
 									<td>
 										<a th:href="@{/updateUser/{id}(id=${user.id})}"><button>Modifier</button></a>
 										<a th:href="@{/deleteUserPage?id={id}(id=${user.id})}"><button>Supprimer</button></a>
 									</td>
-								</tr>
-								
-							</tbody>
-							
+								</tr>								
+							</tbody>						
 						</table>
-						
-						<h4><a th:href="@{/createUser}">Ajouter un nouvel abonné</a></h4>
-								  			
+														  			
 					</div>
+					
+					<h4><a th:href="@{/createUser}">Ajouter un nouvel abonné</a></h4>
 					
 				</div>
 				
@@ -55,16 +60,14 @@
 				<div id="filesManage" class="container">
 					
 					<div>																				                
-						<h4>Ajouter un dessin</h4>
-						<p th:text="${message1}" th:if="${message1 ne null}" class="alert alert-primary" style="color: rgb(128, 0, 0);"></p>
-						<p th:text="${message2}" th:if="${message2 ne null}" class="alert alert-primary" style="color: rgb(0, 128, 0);"></p>					                
-						<form method="post" th:action="@{/uploadFile}" enctype="multipart/form-data">					                    
+						<h4>Ajouter un dessin</h4>				                
+						<form method="post" th:action="@{/uploadFile}" enctype="multipart/form-data" th:object="${drawing}">					                    
 							<div class="form-group">
 								<input type="file" name="file" class="form-control-file">
-							</div>			                    
+							</div>		                    
 							<div class="form-group">
 								<label for="typeDrawing"> Catégorie </label>
-								<select th:name="typeDrawing" id="typeDrawing">
+								<select th:field="*{type}" name="typeDrawing" id="typeDrawing">
 									<option value="Actualités">Actualités</option>
 									<option value="Environnement">Environnement</option>
 									<option value="Sport">Sport</option>
@@ -77,26 +80,29 @@
 							</div>										
 							<div class="form-group">
 								<label for="title"> Titre </label>
-								<input th:name="title" type="text" id="title" placeholder="Saisir le titre">
+								<input th:field="*{title}" name="title" type="text" id="title" placeholder="Saisir le titre">
+							</div>						
+							<div>
+							    <label for="privateDrawing">Dessin privé : </label>
+								<input th:field="*{privateDrawing}" type="checkbox" name="privateDrawing" id="privateDrawing" value="true">    
 							</div>
 							<button type="submit" class="btn btn-primary">Envoyer</button>
 						</form>
   					</div>
   					
   					<div>					
-					    <h4>Supprimer un dessin</h4>
-					    <p th:text="${message3}" th:if="${message3 ne null}" class="alert alert-primary" style="color: rgb(0, 128, 0);"></p>
-					    <p th:text="${message4}" th:if="${message4 ne null}" class="alert alert-primary" style="color: rgb(128, 0, 0);"></p>  				                
-					     <form method="post" th:action="@{/deleteFile}">				                
+					    <h4>Modifier ou Supprimer un dessin</h4>
+					     <form method="get" th:action="@{/drawingUpdatePage}">				                
 							<div class="form-group">
 								<label for="nameFile"> Nom du dessin </label>
 								<select name="nameFile" id="nameFile">
-									<option selected value="">Sélectionner un dessin à supprimer</option>
+									<option selected value="">Sélectionner un dessin</option>
 									<option th:each="d: ${drawings}" th:value="${d.name}" th:text="${d.name}" ></option>
 								</select>
-							</div>					                    
-					       	<button type="submit" class="btn btn-primary">Supprimer</button>           					                    
-						</form>       
+							</div>
+							<button type="submit" class="btn btn-primary">Modifier</button>            
+					       	<button th:formaction="@{/deleteFilePage}" type="submit" class="btn btn-primary">Supprimer</button> 
+						</form>      
 					   
 					</div>
 								           
@@ -107,10 +113,8 @@
 				<div id="newsManage" class="container">
 					
 					<div>																				                
-						<h4>Ajouter une actualité </h4>
-								                
-						<p th:text="${message5}" th:if="${message5 ne null}" class="alert alert-primary" style="color: rgb(0, 128, 0);"></p>
-					    
+						<h4>Ajouter ou envoyer une actualité </h4>
+								                					    
 						<form method="post" th:action="@{/saveNews}" th:object="${siteNews}">					                    
 							
 							<div class="form-group">
@@ -124,23 +128,23 @@
 								<textarea
 								name="texte" th:field="*{texte}" class="form-control" id="messageInput" 
 								rows="10" cols="50" required> Ecrivez votre texte ici. </textarea>
-							</div>	
+							</div>
 															
 							<button type="submit" class="btn btn-primary">Sauvegarder</button>
+							<button th:formaction="@{/previewNewsletter}" type="submit" class="btn btn-primary">Prévisualiser</button>
+							<button th:formaction="@{/sendNewsletter}" type="submit" class="btn btn-primary">Envoyer</button>
 							
 						</form>
   					</div>
   					
   					<div>					
 					    <h4>Supprimer une actualité </h4>			 
-					    
-					   	<p th:text="${message6}" th:if="${message6 ne null}" class="alert alert-primary" style="color: rgb(0, 128, 0);"></p>
-					       
+					    					       
 					     <form method="post" th:action="@{/deleteNews}">				                
 							<div class="form-group">
 								<label for="nameFile"> Titre </label>
 								<select name="newsId" id="newsId	">
-									<option selected value="">Sélectionner une actualité à supprimer</option>
+									<option selected value="0">Sélectionner une actualité à supprimer</option>
 									<option th:each="sn: ${listSiteNews}" th:value="${sn.id}" th:text="${sn.date} + '/' + ${sn.id}" ></option>
 								</select>
 							</div>					                    

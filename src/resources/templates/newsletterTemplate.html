@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+	    <title>Email </title>
+	    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	   
+	   <style>
+	   
+	        #header {
+				width: 90%;
+				margin: auto;
+				border : 2px solid rgb(45, 89, 114);
+				background-color: rgb(156, 209, 236);
+			}
+
+	        #title {
+				font-family: Chiller, Arial Narrow, sans-serif;
+				color: rgb(31, 75, 140);
+				padding-left: 20px;
+			}
+
+	        #section {
+	        	border : 2px solid rgb(45, 89, 114);
+	        	border-top: none;
+				width: 90%;
+				padding: 10px 0px 10px 0px;
+				margin: auto;
+				font-family: Comic Sans MS, Times New Roman, sans-serif;
+				color: white;
+				background: rgb(21, 67, 96);
+			}
+
+			p {
+				padding: 0px 20px 0px 20px;
+				text-align: justify;
+			}
+
+			#link {
+				color: blanchedalmond;
+			}
+
+			#link:hover {
+				color: orangered;
+			}
+
+	        #article {
+				border: 1px solid #CDD8F4;
+				color: #CDD8F4;
+				margin: auto;
+				width: 75%;
+			}
+
+			#title2 {
+				text-align: center;
+			}
+
+			#nav {
+				margin: auto;
+				overflow: hidden;
+				background-color: #333;
+				font-family: Ink Free, Comic Sans MS, Times New Roman, sans-serif;
+			}
+
+			#nav a {
+				float: right;
+				display: block;
+				color: #f2f2f2;
+				text-align: center;
+				padding: 12px 12px;
+				text-decoration: none;
+				background-color: rgb(45, 89, 154);
+				color: white;
+			}
+
+			#nav a:hover {
+				background-color: #555;
+				color: white;
+			}
+
+	    </style>
+	    
+	</head>
+	<body>
+	
+	<div id="header">
+		<h2 id="title"> LES PETITS DESSINS d'ERIC SUREAU </h2>
+		<div id="nav">
+			<a href="https://ericsureau.fr/login">Se connecter</a>       
+		</div> 	
+	</div>
+	
+	<div id="section">
+		<p th:text="${'Bonjour ' + nameUser + ','}"> </p>
+				
+		<div id="article">  
+			
+			<h4 id="title2" th:text="${newsletterTitle}"> </h4>
+					
+			<p id="text" th:each="p: ${newsletterParaph}" th:text="${p}"> </p>
+							
+		</div>
+
+		<p>
+		Rendez-vous sur le <a id="link" href="https://ericsureau.fr/"> <strong>ericsureau.fr</strong></a> pour découvrir toutes ces nouveautés !
+		</p>											
+
+		<p>
+		Bonne découverte.
+		</p>
+
+		<p>
+		<img src="cid:attachment.png" />
+		</p>
+		
+	</div>
+	
+	</body>
+	
+</html>

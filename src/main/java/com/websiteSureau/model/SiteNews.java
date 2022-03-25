@@ -15,7 +15,7 @@ import lombok.Data;
 public class SiteNews {
 	
     @Id
-    @GeneratedValue(strategy = GenerationType. IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     
 	private String newsTitle;

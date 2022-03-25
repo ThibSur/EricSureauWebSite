@@ -26,28 +26,30 @@
 		          	<div class="dropdown">
 				      <button class="dropbtn">Bandes Dessinées </button>
 		            	<div class="dropdown-content">
-		              		<a th:each="title : ${bdTitles}" th:href="'/bd?n=' + ${titleStat.index}" th:text="${bdTitles[titleStat.index]}"></a> 
+		              		<a th:each="title : ${bdTitles}" th:href="@{/comics/{id}(id=${titleStat.index})} + '?page=0' + '#bd'" th:text="${bdTitles[titleStat.index]}"></a> 
 		            	</div>
 		          	</div>
-					<a href = "/drawings?type=4"> Caricatures </a>
-					<a href ="/author"> L'Auteur </a>
+					<a href="/drawings?type=4"> Caricatures </a>
+					<a href="/author"> L'Auteur </a>
 					<a href="/contact">Contact</a>
-					<a href="/admin" th:if="${userRole eq 'ROLE_ADMIN'}">Admin</a>
+					<a href="/admin" th:if="${userRole eq 'ROLE_ADMIN'}"> Admin </a>
+					<a id="log" href="/login">
+						<span id="userName" th:text="${loginUserName}"> </span>
+						<img th:src="${drawingName}"> 
+					</a>
 				</nav>  
 				  
 		</header>
 
-		<footer th:fragment="footer">	
-				<div id = "copyright">
-			    	<a href = "/legal"> Copyright Eric Sureau <br/>
-			    	Tous droits réservés </a>
-			    	<img th:src="@{/img/logos/copyright.png}" alt="Copyright"/>
-			    </div>
-			    <div>
-				    <a href="/contact">Contact</a>
-				    <a href="/login">Connexion</a>	
-				    <a href="/legal">Mentions légales</a>
-			    </div>
+		<footer th:fragment="footer">
+			<div id = "footerMenuIcons">
+			    <a href="/legal"> <img th:src="@{/img/logos/copyright.png}" alt="Copyright"/> </a>
+				<a href="/contact"> <img th:src="@{/img/logos/contact.png}" alt="Contact"> </a>
+				<a href="/login"> <img th:src="@{/img/logos/login.png}" alt="Connexion"> </a>
+			</div>
+			<div id = "footerMenuText">		
+				<a href ="/legal"> Mentions légales </a>		
+			</div>
 		</footer>
 		
 	</body>

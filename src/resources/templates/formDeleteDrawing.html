@@ -22,14 +22,14 @@
 	<section id="forms">
 	<div class="container special">
 
-		<h2 class="h2">Suppression d'un compte</h2>
+		<h2 class="h2">Suppression d'un dessin</h2>
 		
 		<div>	
 			
-			<form id="confirm" method="post" th:action="@{/deleteUser/{id}(id=${param.id})}">
-				<h4 th:text="'Utilisateur n°' + ${param.id}"> </h4>
+			<form id="confirm" method="post" th:action="@{/deleteFile?nameFile=} + ${drawing.name}">
+				<h4 th:text="${drawing.name}"> </h4>
 				<p> Toute suppression est définitive. </p>
-				<button>Confirmer la suppression</button>
+				<button type="submit" class="btn btn-primary">Confirmer la suppression</button>
 			</form>
 			
 			<form id="return" method="get" action="javascript:history.back()">

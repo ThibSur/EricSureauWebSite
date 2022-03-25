@@ -21,19 +21,31 @@
 	</header>
 	
 	<section id="forms">
-	<div class="container special">
 
 		<h2>Connexion</h2>
+	    
+	    <div th:if="${currentUser !='anonymousUser'}">
+	    
+	    	<p style="color: #F3FF84">
+				Connecté avec le compte <strong th:text="${currentUser}"></strong>
+			</p>
 		
-		<p th:if="${currentUser !='anonymousUser'}" style="color: #19D31A">
-		Connecté avec le compte <strong th:text="${currentUser}"></strong>
-		</p>
+	    	<form method="get" action="/account">
+				<button type="submit" class="btn btn-primary"> Accéder à mon compte </button>
+			</form>
 		
-		<p th:if="${currentUser=='anonymousUser'}"> 
-		Si vous souhaitez accéder aux autres contenus du site vous devez vous connecter.
-		</p>
-
-		<div>
+	    	<form th:action="@{/logout}" method="POST" >					
+	        	<button class="btn btn-lg btn-primary btn-block" name="Submit" value="Login" type="Submit" th:text="Déconnexion"></button>	        	
+	    	</form>
+	    	
+		</div>
+		
+		<div th:if="${currentUser=='anonymousUser'}">
+		
+			<p th:if="${currentUser=='anonymousUser'}"> 
+			Connectez-vous pour accéder aux autres contenus du site.
+			</p>
+		
 			<form th:action="@{/login}" method="POST" class="form-signin">
 		  		
 				<div class="form-group">
@@ -50,24 +62,26 @@
 	        	<button class="btn btn-lg btn-primary btn-block" name="Submit" value="Login" type="Submit" th:text="Connexion"></button>
 	        	
 	    	</form>
-	    	
-		</div>
-		
-		<div th:if="${currentUser=='anonymousUser'}">
 		
 			<p>
-			Inscrivez-vous gratuitement pour accéder aux autres contenus du site !
+			Si vous n'avez pas encore de compte, inscrivez-vous gratuitement pour accéder aux autres contenus du site.
 			</p>
 
 			<form id="return" method="get" th:action="@{/createUser}">
 				<button type="submit" class="btn btn-primary">Créer un compte</button>
 			</form>
-		
-		</div>
-		
-	</div>
-	
-	</section>
+			
+			<p>
+			Mot de passe oublié ?
+			</p>
 
+			<form id="return" method="get" th:action="@{/resetPassword}">
+				<button type="submit" class="btn btn-primary">Réinitialiser mon mot de passe</button>
+			</form>
+			
+		</div>
+			
+	</section>
+		
 </body>
 </html>

@@ -62,22 +62,32 @@
 				    <br/>
 					(une activation enverra un mail à l'utilisateur pour créer son mot de passe) 
 				</div>
-		       			      	
+				
+				<div class="form-group">
+					<label for="typeDrawing"> Caricature associée </label>
+					<select name="drawingID" id="drawingID">
+						<option th:value="${drawingUserID}" th:text="${drawingUserName}"></option>
+						<option th:each="d: ${drawings}" th:value="${d.id}" th:text="${d.name}" ></option>
+						<option th:value="0">Aucune</option>
+					</select>
+		       	</div>
+		       	
+		       	<div>
+				    <label for="subscribeNews">Inscrit à la newsletter du site : </label>
+					<input type="checkbox" th:field="*{newsletterSubscription}" id="subscribeNews" value="true">    
+				</div>
+		       	
 				<button type="submit" class="btn btn-primary">Modifier</button>
 			</form>
 			
 			<form id="return" method="get" th:action="@{/admin}">
 				<button type="submit" class="btn btn-primary">Retour</button>
-			</form>
-			
-			<div th:if="${param.error1}" class="alert alert-error">
-		    <p style="font-size: 20; color: rgb(128, 0, 0);"> Aucune modification enregistrée </p>
-		    </div>
+			</form>				
 		       	
 		</div>
 
 	</div>
 	</section>
-	
+		
 </body>
 </html>

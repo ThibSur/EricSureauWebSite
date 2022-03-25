@@ -6,6 +6,7 @@ import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,22 +34,36 @@ public class SiteNewsController {
 	@PostMapping("/saveNews")
 	public String saveNews(@ModelAttribute SiteNews news, RedirectAttributes attributes) {
 		newsService.addNews(news);
-		attributes.addFlashAttribute("message5", "Nouvelle actualité ajoutée");
+		attributes.addFlashAttribute("message2", "Nouvelle actualité ajoutée en page d'accueil.");
 		return "redirect:/admin";
 	}
 	
 	@PostMapping("/deleteNews")
 	public String deleteNews(@RequestParam("newsId") int id, RedirectAttributes attributes) {
-		newsService.deleteNews(id);
-		attributes.addFlashAttribute("message6", "L'actualité a bien été supprimée");
+		if (id==0) {
+			attributes.addFlashAttribute("message1", "Veuillez sélectionner une actualité à supprimer.");
+		} else {
+			newsService.deleteNews(id);
+			attributes.addFlashAttribute("message2", "L'actualité a bien été supprimée.");
+		}
 		return "redirect:/admin";
 	}
 	
+	@PostMapping("/previewNewsletter")
+	public String previewNewsletterBeforeSending(@ModelAttribute SiteNews newsletter, Model model) {
+		String[] listOfNewsletterParaph = newsletter.getTexte().split("\n");       
+        model.addAttribute("newsletterTitle", newsletter.getNewsTitle());
+        model.addAttribute("newsletterParaph", listOfNewsletterParaph);
+		return "newsletterPreview";
+	}
+	
 	@PostMapping("/sendNewsletter")
-	public ModelAndView sendNewsletter(@ModelAttribute SiteNews newsletter) throws UnsupportedEncodingException, MessagingException {
+	public ModelAndView sendNewsletter(@ModelAttribute SiteNews newsletter, RedirectAttributes attributes) 
+			throws UnsupportedEncodingException, MessagingException {
 		Iterable<MyUser> listUser = userService.getUsersBySubscriptionTrue();
 		mailService2.sendContactFormEmail(newsletter, listUser);
-		return new ModelAndView("redirect:/");
+		attributes.addFlashAttribute("message2", "L'actualité a bien été envoyée.");
+		return new ModelAndView("redirect:/admin");
 	}
 
 }

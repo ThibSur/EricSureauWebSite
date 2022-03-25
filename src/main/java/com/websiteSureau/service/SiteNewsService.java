@@ -35,11 +35,11 @@ public class SiteNewsService {
     public void addNews(SiteNews news) {
     	
     	String month = null;
-        
     	Calendar cal = Calendar.getInstance();
+    	int m = cal.get(Calendar.MONTH) + 1;
     	 
-    	if (cal.get(Calendar.MONTH)==10 || cal.get(Calendar.MONTH)==11) { month = cal.get(Calendar.MONTH) + "";
-    	} else { month= "0" +  cal.get(Calendar.MONTH);}
+    	if (cal.get(Calendar.MONTH)==10 || cal.get(Calendar.MONTH)==11) { month = m + "";
+    	} else { month= "0" +  m;}
     
     	String date = cal.get(Calendar.YEAR) + "-" + month;
     

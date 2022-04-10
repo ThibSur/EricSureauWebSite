@@ -38,6 +38,7 @@
 
 			#link {
 				color: blanchedalmond;
+				text-decoration: none;
 			}
 
 			#link:hover {
@@ -45,14 +46,23 @@
 			}
 
 	        #article {
-				border: 1px solid #CDD8F4;
+	       	 	margin-top: 40px;
+	        	margin-bottom: 40px;
+	        	margin-left: auto;
+	        	margin-right: auto;
+				border-top: 1px solid #CDD8F4;
+				border-bottom: 1px solid #CDD8F4;
+				padding-bottom: 20px;
 				color: #CDD8F4;
-				margin: auto;
-				width: 75%;
+				width: 80%;
+				font-family: Ink Free, Comic Sans MS, Times New Roman, sans-serif;
+				font-size: 1.1em;
 			}
 
 			#title2 {
 				text-align: center;
+				font-size: 1.1em;
+				color: orangered;
 			}
 
 			#nav {
@@ -78,6 +88,16 @@
 				color: white;
 			}
 
+			#author {
+  				display: block;
+				margin-right: auto;
+				margin-left: auto;
+				max-height: 80px;
+				border-radius: 60px 60px;
+				margin-top: -10px;
+				margin-bottom: -10px;
+			}
+
 	    </style>
 	    
 	</head>
@@ -95,22 +115,20 @@
 				
 		<div id="article">  
 			
-			<h4 id="title2" th:text="${newsletterTitle}"> </h4>
+			<h4 id="title2" th:text="'🖍🖌 ' + ${newsletterTitle} + ' 🖌🖍'"> </h4>
+			
+			<img id="author" src="https://ericsureau.fr/img/logos/Riquet.jpg"/> 
 					
 			<p id="text" th:each="p: ${newsletterParaph}" th:text="${p}"> </p>
 							
 		</div>
 
 		<p>
-		Rendez-vous sur le <a id="link" href="https://ericsureau.fr/"> <strong>ericsureau.fr</strong></a> pour découvrir toutes ces nouveautés !
+		Rendez-vous sur <a id="link" href="https://ericsureau.fr/"> <strong>ericsureau.fr</strong></a> pour découvrir toutes ces nouveautés !
 		</p>											
 
 		<p>
-		Bonne découverte.
-		</p>
-
-		<p>
-		<img src="cid:attachment.png" />
+		<img src="https://ericsureau.fr/img/logos/ES.png" alt="Eric Sureau"/>
 		</p>
 		
 	</div>

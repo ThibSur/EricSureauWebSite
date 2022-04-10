@@ -7,7 +7,7 @@
 		<title th:text="${title}"> </title>
 	</head>
 <body>
-		<div th:replace="fragments :: header" th:with="bdTitles=${bdTitles}"></div>
+		<div th:replace="fragments :: header" th:with="bdTitles=${bdTitles} and userRole=${userRole}"></div>
 		
 		<section>
 			

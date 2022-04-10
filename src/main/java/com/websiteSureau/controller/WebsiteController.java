@@ -40,10 +40,10 @@ public class WebsiteController {
 	
 	@Autowired
 	Map<String, Object> menuAttributes;
-    	
+    
+	// Get the home page of the site with public drawing, comics of the Month and news.
 	@GetMapping("/")
-	public String getHomePage(Model model) {		
-		// Get the home page of the site with public drawing, comics of the Month and news.
+	public String getHomePage(Model model) {			
 		
 		//add menu attributes in fragments.html
 		menuAttributes = getMapOfAttributesForMenu();
@@ -56,7 +56,7 @@ public class WebsiteController {
 		if (!comicsOfTheMonth.isEmpty()) model.addAttribute("comicsMonth", comicsOfTheMonth.get(0));
 	    
 		//add siteNews in homePage with their dates (and the most recent appears in first)
-    	List<SiteNews> siteNews = newsService.getNews();
+    	List<SiteNews> siteNews = newsService.getNewsByPrivateNewsEqualFalse();
     	ArrayList<String> siteNewsDate = newsService.getNewsDate(siteNews);
 	    String[] dateInLetters = calendarService.createArrayWithDateinLetters(siteNewsDate);    
 	    Collections.reverse(siteNews);   
@@ -67,13 +67,9 @@ public class WebsiteController {
 		return "index";
 	}
 	
+	// Get the adminPage (only for user with admin role) for managing users, drawings and siteNews.
 	@GetMapping("/admin")
 	public String getAdminPage(Model model) {
-		// Get the adminPage (only for user with admin role) for managing users, drawings and siteNews.
-		
-		//add menu attributes in fragments.html
-		menuAttributes = getMapOfAttributesForMenu();
-		model.mergeAttributes(menuAttributes);
     	
 		//manage users : add list of all users
 		Iterable<MyUser> listUser = userService.getUsers();
@@ -94,9 +90,9 @@ public class WebsiteController {
 		return "adminPage";
 	}
 	
+	// Get the custom loginPage.
     @GetMapping("/login")
     public ModelAndView getLoginPage(Model model){
-		// Get the custom loginPage.
    	    
     	final String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
     	model.addAttribute("currentUser", currentUser);
@@ -106,9 +102,9 @@ public class WebsiteController {
         return modelAndView;
     }
     
+	// Get the custom accountPage of the user.
     @GetMapping("/account")
     public String getAccountPage(Model model){	
-		// Get the custom accountPage of the user.
    	    
     	final String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
     	MyUser user = userService.getUserByUserName(currentUser);
@@ -157,7 +153,7 @@ public class WebsiteController {
 		Iterable<Drawing> listDrawingsOfTheType = serviceDrawing.getDrawingsByType("BD");		
 		String[] titles = serviceDrawing.getComicsTitles();
 		String titleSelectedBD = titles[id];		   	
-		ArrayList<String> pagesOfTheComics = new ArrayList<String>();   	
+		ArrayList<String> pagesOfTheComics = new ArrayList<>();
 	    for (Drawing d : listDrawingsOfTheType) {
 	    	if (d.getTitle().equals(titles[id])) pagesOfTheComics.add(d.getName());
 	    	}	    
@@ -189,7 +185,7 @@ public class WebsiteController {
 	    
 		//add pages of the comics to display depending on the type of drawing (=BD_Accueil)
 		Iterable<Drawing> listDrawingsOfTheType = serviceDrawing.getDrawingsByType("BD_Accueil");		   	
-		ArrayList<String> pagesOfTheComics = new ArrayList<String>();
+		ArrayList<String> pagesOfTheComics = new ArrayList<>();
 	    for (Drawing d : listDrawingsOfTheType) {
 	    	pagesOfTheComics.add(d.getName());
 	    }    
@@ -228,26 +224,23 @@ public class WebsiteController {
 		return "author";
 	}
 	
-	private Map<String, Object> getMapOfAttributesForMenu() {
-		
-		//get the attributes for the menu
+	//get the attributes for the menu
+	private Map<String, Object> getMapOfAttributesForMenu() {	
 		String[] titles = serviceDrawing.getComicsTitles();
 		menuAttributes.put("bdTitles", titles);
     	final String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-    	String userRole = null;
-    	if (currentUser != "anonymousUser") {
-	    	userRole = userService.getUserRole(currentUser);
-		    }
-    	menuAttributes.put("userRole", userRole);
     	MyUser user = userService.getUserByUserName(currentUser);
+    	String userRole = null;
     	String logDrawing = "/img/logos/loginWhite.png";
     	String loginUserName = null;
-    	if (currentUser != "anonymousUser") {
+    	if (!currentUser.equals("anonymousUser")) {
+    		userRole = userService.getUserRole(currentUser);
     		loginUserName = user.getName();
         	if (user.getDrawing() != null) {
         		logDrawing = "/images" + "?name=" + user.getDrawing().getName();
         		}
     		}
+    	menuAttributes.put("userRole", userRole);
     	menuAttributes.put("loginUserName", loginUserName);
     	menuAttributes.put("drawingName", logDrawing);
     	

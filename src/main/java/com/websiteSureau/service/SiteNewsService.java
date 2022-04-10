@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -28,43 +29,45 @@ public class SiteNewsService {
         return newsRepository.findAll();
     }
     
+    public List<SiteNews> getNewsByPrivateNewsEqualFalse() {
+    	return newsRepository.findByPrivateNews(false);
+    }
+    
+    public Optional<SiteNews> getNewsById(int id){
+    	return newsRepository.findById(id);
+    }
+    
     public void deleteNews(final int id) {
     	newsRepository.deleteById(id);
     }
 
     public void addNews(SiteNews news) {
-    	
-    	String month = null;
-    	Calendar cal = Calendar.getInstance();
-    	int m = cal.get(Calendar.MONTH) + 1;
-    	 
-    	if (cal.get(Calendar.MONTH)==10 || cal.get(Calendar.MONTH)==11) { month = m + "";
-    	} else { month= "0" +  m;}
-    
-    	String date = cal.get(Calendar.YEAR) + "-" + month;
-    
-    	news.setDate(date);
+    	if (getNewsById(news.getId()).isEmpty()) {
+			Calendar cal = Calendar.getInstance();
+	    	int m = cal.get(Calendar.MONTH) + 1;
+			String month;
+			if (cal.get(Calendar.MONTH) == Calendar.NOVEMBER || cal.get(Calendar.MONTH) == Calendar.DECEMBER) {
+	    		month = m + "";
+	    	} else { 
+	    		month = "0" +  m;
+	    	}
+	    	String date = cal.get(Calendar.YEAR) + "-" + month;
+	    	news.setDate(date);    		
+	    }
     	newsRepository.save(news);
     }
     
 	public ArrayList<String> getNewsDate(List<SiteNews> listSiteNews) {
-		
-		HashSet<String> hash = new HashSet<String>();  
-   	  			
+		HashSet<String> hash = new HashSet<>();
 	   	for (SiteNews sn:listSiteNews) {
 			hash.add(sn.getDate());
 	   	}
-	   		        
-	   	ArrayList<String> dateArray = new ArrayList<String>();
-	    
-	    for (int i=0; i < (hash.size()) ; i++) {	    	
+	   	ArrayList<String> dateArray = new ArrayList<>();
+	    for (int i=0; i < (hash.size()) ; i++) {
 	    	dateArray.add(hash.toArray(new String[hash.size()])[i]);
 	    }
-	    	    
-	    dateArray.sort((d1,d2) -> d1.compareTo(d2));
+	    dateArray.sort(String::compareTo);
 	    Collections.reverse(dateArray);
-	    
-	   return dateArray;   
-	   	
+	    return dateArray;
 	}
 }

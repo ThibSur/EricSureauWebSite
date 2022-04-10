@@ -1,8 +1,6 @@
 package com.websiteSureau.controller;
 
-import java.io.UnsupportedEncodingException;
-
-import javax.mail.MessagingException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -18,8 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.websiteSureau.model.Drawing;
+import com.websiteSureau.model.MyUser;
 import com.websiteSureau.service.DrawingService;
 import com.websiteSureau.service.FilesService;
+import com.websiteSureau.service.UserService;
 
 @Controller
 public class FilesDrawingController {
@@ -29,6 +29,9 @@ public class FilesDrawingController {
 	
 	@Autowired
 	private DrawingService drawingService;
+	
+	@Autowired
+	private UserService userService;
 	    
     @PostMapping("/uploadFile")
     public String uploadFile(@RequestParam("file") MultipartFile file, @ModelAttribute Drawing drawing, RedirectAttributes attributes) throws Exception {
@@ -39,7 +42,7 @@ public class FilesDrawingController {
     	} else {
     		drawing.setName(file.getOriginalFilename());
     		boolean saveSuccessful = drawingService.save(drawing);
-	   		if (saveSuccessful==true) {
+	   		if (saveSuccessful) {
 	   			fileService.save(file, drawing);
 	   			attributes.addFlashAttribute("message2", "L'image " + file.getOriginalFilename() + " a bien été sauvegardée !"); 
 	   		} else { 
@@ -70,13 +73,13 @@ public class FilesDrawingController {
     }
     
     @PostMapping("/deleteFile")
-    public String deleteFile(@RequestParam("nameFile") String fileName, RedirectAttributes attributes) throws UnsupportedEncodingException, MessagingException {
-    	
+    public String deleteFile(@RequestParam("nameFile") String fileName, RedirectAttributes attributes) {
     	Drawing drawing = drawingService.getDrawingByName(fileName);
-    	if (drawing.getUser().equals(null)) {
-    	drawingService.delete(drawing);
-    	fileService.delete(drawing);
-    	attributes.addFlashAttribute("message3", "L'image " + fileName + " a été supprimée.");
+    	Optional<MyUser> userLinkedToDrawing = userService.getUserByDrawingID(drawing.getId());
+    	if (userLinkedToDrawing.isEmpty()) {
+	    	drawingService.delete(drawing);
+	    	fileService.delete(drawing);
+	    	attributes.addFlashAttribute("message2", "L'image " + fileName + " a été supprimée.");
     	} else { attributes.addFlashAttribute("message1", "Suppression impossible : l'image " + fileName + " est associée à un utilisateur."); }
     	return "redirect:/admin"; 	
     }
@@ -111,20 +114,28 @@ public class FilesDrawingController {
    	public String updateDrawing(@RequestParam("file") MultipartFile file, @ModelAttribute Drawing drawing, RedirectAttributes attributes) throws Exception { 
 
     	Drawing oldDrawing = drawingService.getDrawing(drawing.getId()).get();
+    	String messageOk = "L'image " + drawing.getName() + " a été modifiée.";
     	
     	if (!file.isEmpty()) {
     		fileService.delete(oldDrawing);
     		drawing.setName(file.getOriginalFilename());
     		drawingService.updateDrawing(drawing);
     		fileService.save(file, drawing);
-    		attributes.addFlashAttribute("message2", "L'image " + drawing.getName() + " a été modifiée.");
+    		attributes.addFlashAttribute("message2", messageOk);
     		}
     	else {
     		if (drawing.getType().equals(oldDrawing.getType())) {
-    			attributes.addFlashAttribute("message2", "L'image " + drawing.getName() + " a été modifiée.");
+    			attributes.addFlashAttribute("message2", messageOk);
+    			drawingService.updateDrawing(drawing);
+    		} else if (drawing.getType().equals("Dessin-du-Mois")) {
+    			attributes.addFlashAttribute("message1", "Modification impossible : veuillez sélectionner un fichier pour ajouter un dessin du mois.");		
+    		} else if (oldDrawing.getType().equals("Dessin-du-Mois")) {
+    			fileService.delete(oldDrawing);
+    			attributes.addFlashAttribute("message2", messageOk);
     			drawingService.updateDrawing(drawing);
     		} else {
-    			attributes.addFlashAttribute("message1", "Modification impossible : veuillez sélectionner un fichier pour changer de type.");
+    			attributes.addFlashAttribute("message2", messageOk);
+    			drawingService.updateDrawing(drawing);
     		}
     	}
     	

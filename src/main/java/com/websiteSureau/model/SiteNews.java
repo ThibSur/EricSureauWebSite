@@ -7,10 +7,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import lombok.Data;
 
 @Data
 @Entity
+@DynamicUpdate
 @Table(name = "news")
 public class SiteNews {
 	
@@ -20,9 +23,11 @@ public class SiteNews {
     
 	private String newsTitle;
 	
-	@Column(length = 800)
+	@Column(length = 2000)
 	private String texte;
 	
 	private String date;
+	
+	private boolean privateNews;
 
 }

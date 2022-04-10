@@ -36,36 +36,30 @@ public class UsersController {
 	private DrawingService serviceDrawing;
 	
 	@GetMapping("/createUser")
-	public String createUser(Model model) {
-    	
+	public String createUser(Model model) { 	
 		MyUser s = new MyUser();
-		model.addAttribute("user", s);
-		
+		model.addAttribute("user", s);		
 		return "formNewUser";
 	}
 	
+	//save new user if its email not already exist.
 	@PostMapping("/saveUser")
 	public String saveUser(@ModelAttribute MyUser user, HttpServletRequest request, RedirectAttributes attributes) 
 			throws UnsupportedEncodingException, MessagingException {
 		
-		boolean userSaved = true;
-		
-		Iterable<MyUser> listUsers = userService.getUsers();
-    	for (MyUser u : listUsers) {
-    		if (u.getEmail().equals(user.getEmail())) {
-    			userSaved = false; 
-    			break;
-    		}
-    	}
-    	if (userSaved == true) {
+		boolean userEmailAlreadyExist = false;
+		Optional<MyUser> existingUser = userService.getUserByEmail(user.getEmail());
+		if (existingUser.isPresent()) {
+			userEmailAlreadyExist = true;
+		} else {
     		userService.saveUser(user, getSiteURL(request));
-    		userService.activateUser(user, getSiteURL(request));
+    		userService.activateUser(user, getSiteURL(request), 3600);
     	}
-    	
-	    attributes.addFlashAttribute("userSaved", userSaved);
+	    attributes.addFlashAttribute("userAlreadyExist", userEmailAlreadyExist);
 	    return "redirect:/createUser";
 	}
 	
+	//update user only if a drawing is not already linked to another user (OneToOne relation).
 	@PostMapping("/updateUser")
 	public ModelAndView updateUser(@ModelAttribute MyUser user, @RequestParam("drawingID") int drawingID, 
 			RedirectAttributes attributes, HttpServletRequest request) 
@@ -88,6 +82,7 @@ public class UsersController {
 		return new ModelAndView("redirect:/admin/");
 	}
 	
+	//update newsletterSubscription.
 	@PostMapping("/updatNewsletterSubscription")
 	public ModelAndView updatNewsletterSubscription(@ModelAttribute MyUser user, RedirectAttributes attributes) {	
 		String message = userService.updateMyUserNewsletter(user);
@@ -101,20 +96,17 @@ public class UsersController {
 	}  
 	  
 	@GetMapping("/updateUser/{id}")
-	public String updateUser(@PathVariable("id") final int id, Model model) {
-    	
+	public String updateUser(@PathVariable("id") final int id, Model model) {   	
 		Optional<MyUser> s = userService.getUser(id);
 		model.addAttribute("user", s);
-		
 		int drawingUserID = 0;
 		String drawingUserName = "Aucune";
 		if (userService.getUser(id).get().getDrawing()!=null) {
 			drawingUserID = userService.getUser(id).get().getDrawing().getId();
 			drawingUserName = userService.getUser(id).get().getDrawing().getName();
-			}
+		}
 		model.addAttribute("drawingUserID", drawingUserID);
 		model.addAttribute("drawingUserName", drawingUserName);
-		
 		Iterable<Drawing> drawings = serviceDrawing.getDrawingsByType("Caricatures");
 		model.addAttribute("drawings", drawings);
 		
@@ -125,7 +117,8 @@ public class UsersController {
 	public String deleteUserConfirmationPage() {
 		return "formDeleteUser";		
 	}                                               
-	                                                                                                               
+	
+	//delete user by id, this method can also be called by a user with user role.
 	@PostMapping("/deleteUser/{id}")
 	public ModelAndView deleteUser(@PathVariable("id") final int id, HttpServletRequest request) {
 		String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -142,15 +135,11 @@ public class UsersController {
 	}                                                                                                        
 
 	@GetMapping("/createPassword/{id}")
-	public String savePassword(@PathVariable("id") final int id, Model model, @Param("code") String code) {
-    	
-		Optional<MyUser> u = userService.getUser(id);
-		
-		if (u.isPresent() && u.get().getEnabled()==1 && u.get().getVerificationCode().equals(code)) {
-			
+	public String savePassword(@PathVariable("id") final int id, Model model, @Param("code") String code) {   	
+		Optional<MyUser> u = userService.getUser(id);	
+		if (u.isPresent() && u.get().getEnabled()==1 && u.get().getVerificationCode().equals(code)) {		
 			model.addAttribute("user", u);
-			return "createPassword";
-			
+			return "createPassword";		
 		} else return null;
 	}
 	
@@ -161,27 +150,19 @@ public class UsersController {
 		else { return new ModelAndView("redirect:/createPassword/" + user.getId() + "?code=" + user.getVerificationCode() + "&" + s); }
 	}
 	
-	
 	@GetMapping("/resetPassword")
-	public String getResetPasswordPage(Model model) {
-	
+	public String getResetPasswordPage(Model model) {	
 		MyUser u = new MyUser();
-		model.addAttribute("user", u);
-		
-	    return "resetPassword";
-		
+		model.addAttribute("user", u);	
+	    return "resetPassword";	
 	}
 	
 	@PostMapping("/resetPassword")
-	public String resetPassword(@ModelAttribute MyUser user, HttpServletRequest request, RedirectAttributes attributes) throws UnsupportedEncodingException, MessagingException {
-		
+	public String resetPassword(@ModelAttribute MyUser user, HttpServletRequest request, RedirectAttributes attributes) 
+			throws UnsupportedEncodingException, MessagingException {
 		Boolean r = userService.resetPassword(user, getSiteURL(request));
 		userService.deleteVerificationCode(user, 3600);
-		
-	    attributes.addFlashAttribute("passwordReseted", r);
-	    
-	    return "redirect:/resetPassword";
-		
+	    attributes.addFlashAttribute("passwordReseted", r);    
+	    return "redirect:/resetPassword";	
 	}
-
 }

@@ -71,9 +71,8 @@ section {
 
 #news {
 	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-  	justify-content: center;
+	justify-content: space-around;
+	width:100%
 }
 
 #news img {
@@ -81,13 +80,27 @@ section {
 	max-width: 600px;
 }
 
+#news h2 {
+	text-transform: none;
+	text-align: center;
+	font-size: 1.5em;
+	color: rgb(18, 9, 95);
+}
+
 #index figcaption {
 	font-family: Arial Black, Times New Roman, sans-serif;
 	color: whitesmoke;
 	margin:  10px 0px 10px 0px;
-	font-size: 1.3em;
+	font-size: 1.1em;
 	font-weight: bold;
 	text-align: center;
+}
+
+#news #art{
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+  	justify-content: center;
 }
 
 #news article {
@@ -95,12 +108,13 @@ section {
 	padding: 20px 20px 20px 20px;
 	color: rgb(18, 9, 95);
 	margin: 20px 20px 20px 20px;
-	width: 75%;
+	width: 100%;
 	text-align: center;
 }
 
 #news h4 {
 	font-size: 1.2em;
+	width: 100%;
 }
 
 #news p {
@@ -127,6 +141,21 @@ section {
    	font-style: italic;
 }
 
+#author aside::after{
+   	content: '';
+	position: absolute;
+	left: 0;
+	top: 20%;
+	width: 0;
+	height: 0;
+	border: 28px solid transparent;
+	border-right-color: rgb(18, 9, 110);
+	border-left: 0;
+	border-bottom: 0;
+	margin-top: -14px;
+	margin-left: -28px;
+}
+
 #author img {
 	width: 200px;
 	height: auto;
@@ -142,6 +171,8 @@ table img {
 #displayImage {
 	display: flex;
   	justify-content: center;
+  	background-color: black;
+  	height: 100vh;
 }
 
 #displayImage img {
@@ -151,19 +182,16 @@ table img {
 
 #displayImage #exit {
 	text-align: center;
-	position: relative;
-	right: 30px;
-	height: 12%;
-	width: 30px;
-	font-family: sans-serif;
+	position: absolute;
+	right: 0;
 	font-size: 2em;
 	text-decoration: none;
   	color: orangered;
 }
 
 #displayImage #exit:hover {
-  color: orangered;
-  background-color: blanchedalmond;
+  	color: orangered;
+  	background-color: blanchedalmond;
 }
 
 #caricatures img {
@@ -288,7 +316,6 @@ header h1 {
 
 #intro article {
 	font-size: 1.2em;
-	padding-right: 40px;
 }
 
 #biographie figure {
@@ -304,6 +331,7 @@ header h1 {
 
 #adminpage .container {
 	text-align: left;
+	font-family: Trebuchet MS;
 }
 
 #alert-primary {
@@ -317,6 +345,11 @@ header h1 {
 	margin-bottom: 50px;
 }
 
+#usersManageEnd {
+	display: flex;
+	justify-content: space-between;
+}
+
 #scroller {
 	max-width:90%;
 	height:300px; 
@@ -325,6 +358,7 @@ header h1 {
 
 #scroller td {
 	padding-left: 10px;
+	font-size: 0.9em;
 }
 
 #scroller th {
@@ -333,35 +367,15 @@ header h1 {
 }
 
 #intro aside {
-	position: relative;
-	box-shadow: 0px 2px 5px #1c1a19;
-	margin: auto;
-	min-width: 300px;
-	border-radius: 60px 60px;
-   	padding: 10px 10px 10px 10px;
-   	background: rgb(18, 9, 110);
-   	font-style: italic;
+	min-width: 450px;
    	text-align: center;
 }
 
-#comicsp1 img {
-	max-height: 75%;
+#intro aside img {
+	float: right;
+	max-height: 100%;
 	max-width: 100%;
-}
-
-aside::after{
-   	content: '';
-	position: absolute;
-	left: 0;
-	top: 20%;
-	width: 0;
-	height: 0;
-	border: 28px solid transparent;
-	border-right-color: rgb(18, 9, 110);
-	border-left: 0;
-	border-bottom: 0;
-	margin-top: -14px;
-	margin-left: -28px;
+	border-radius: 40px 40px;
 }
 
 h2 {
@@ -525,10 +539,18 @@ form div {
 		padding-right: 0px;
 	}
 	
-	#news article {
-		width: 90%;
+	#news {
+		flex-wrap: wrap;
+		align-items: center;
+	  	justify-content: center;
 	}
-
+	
+	#news figure {
+		flex-wrap: wrap;
+		align-items: center;
+	  	justify-content: center;
+	}
+  	
    	#intro aside {
 		max-height: 100%;
 	}
@@ -537,7 +559,7 @@ form div {
 		border: 0px;
 	}
 
-   #intro {
+   	#intro {
 		flex-wrap: wrap;
 	}
 
@@ -557,6 +579,11 @@ form div {
 		display: block;
 		text-align: center;
 		font-size: 1.5em;
+	}
+	
+	#news img {
+		max-height: 100%;
+		max-width: 100%;
 	}
 	
 	#userName {
@@ -610,6 +637,15 @@ form div {
 	
 	#adminpage h4 {
 		font-size: 1.2em;
+	}
+	
+	table img {
+		max-height: 100%;
+		max-width: 100%;
+	}
+	
+	#drawings table td {
+		padding-right: 0px;
 	}
 
 }

@@ -11,9 +11,10 @@ import com.websiteSureau.model.MyUser;
 
 @Repository
 public interface UserRepository extends JpaRepository<MyUser, Integer> {
-	MyUser findByEmail(String email);
+	Optional<MyUser> findByEmail(String email);
     MyUser findByUserName(String userName);
     Iterable<MyUser> findByNewsletterSubscription(boolean subscription);
+    Iterable<MyUser> findByAuthority(String role);
     
     @Query(
     	value = "SELECT * FROM users WHERE drawing_id = :id", 

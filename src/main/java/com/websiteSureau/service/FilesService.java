@@ -20,21 +20,26 @@ public class FilesService {
     public S3ObjectInputStream findByName(String fileName) {
        return s3Repository.findByName(fileName);
     }
-
-	public void save(MultipartFile file, Drawing drawingToSave) throws Exception {
-		
-		// save file in server
-			
-		if (drawingToSave.getType().equals("BD_Accueil") || drawingToSave.getType().equals("Dessin-du-Mois")) {
-			s3Repository.saveFile(file, "staticimages/public/");
-		} else {
-			s3Repository.saveFile(file, "staticimages/private/");
+    
+    // save file in server
+	public void save(MultipartFile file, Drawing drawingToSave) throws Exception {		
+		String type = drawingToSave.getType();
+		switch (type) {
+			case "BD_Accueil":
+				s3Repository.saveFile(file, "staticimages/public/");
+				break;
+			case "Dessin-du-Mois":
+				s3Repository.saveFile(file, "staticimages/public/");
+				s3Repository.saveFile(file, "staticimages/private/");
+				break;
+			default:
+				s3Repository.saveFile(file, "staticimages/private/");
 		}
 
     }
 	
-	public void delete(Drawing drawing) {	
-		
+	// delete file in server
+	public void delete(Drawing drawing) {		
 		if (drawing.getType().equals("BD_Accueil") || drawing.getType().equals("Dessin-du-Mois")) {
 			s3Repository.deleteByName("staticimages/public/" + drawing.getName());
 		} else { s3Repository.deleteByName("staticimages/private/" + drawing.getName()); }

@@ -26,7 +26,7 @@
 		
 		<div>	
 			
-			<form id="confirm" method="post" th:action="@{/deleteFile?nameFile=} + ${drawing.name}">
+			<form id="confirm" method="post" th:action="@{'/deleteFile?nameFile=' + ${drawing.name}}">
 				<h4 th:text="${drawing.name}"> </h4>
 				<p> Toute suppression est définitive. </p>
 				<button type="submit" class="btn btn-primary">Confirmer la suppression</button>

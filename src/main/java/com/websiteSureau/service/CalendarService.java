@@ -11,7 +11,7 @@ public class CalendarService {
 	
 	public String[] createArrayWithDateinLetters(ArrayList<String> listOfDate) {
     	
-		Map<String, String> monthsInLettersMap = new HashMap<String, String>() ;
+		Map<String, String> monthsInLettersMap = new HashMap<>() ;
 		
 			monthsInLettersMap.put("01", "Janvier");
 			monthsInLettersMap.put("02", "Février");

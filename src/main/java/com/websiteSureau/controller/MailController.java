@@ -1,7 +1,5 @@
 package com.websiteSureau.controller;
 
-import java.io.UnsupportedEncodingException;
-
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,7 @@ public class MailController {
 	private EmailServiceImpl mailService;
 
 	@PostMapping("/sendMessage")
-	public ModelAndView sendMessage(@ModelAttribute Message message) throws UnsupportedEncodingException, MessagingException {
+	public ModelAndView sendMessage(@ModelAttribute Message message) throws MessagingException {
 		mailService.sendContactFormEmail(message);
 		return new ModelAndView("redirect:/");
 	}

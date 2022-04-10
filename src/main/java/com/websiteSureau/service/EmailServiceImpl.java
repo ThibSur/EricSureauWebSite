@@ -1,16 +1,16 @@
 package com.websiteSureau.service;
 
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -29,17 +29,27 @@ public class EmailServiceImpl implements EmailService {
 	
 	@Autowired
 	protected SpringTemplateEngine thymeleafTemplateEngine;
-
+	
+	private static final Logger LOG = LoggerFactory.getLogger(EmailServiceImpl.class);
+	
 	@Override
 	public void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException {
+		
+		LOG.info("START... Sending email");
+		
 	    MimeMessage message = emailSender.createMimeMessage();
 	    MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 	    helper.setFrom("ericsureau.fr@gmail.com");
 	    helper.setTo(to);
 	    helper.setSubject(subject);
 	    helper.setText(htmlBody, true);
-	    helper.addAttachment("attachment.png", new ClassPathResource("/static/img/logos/ES.png"));
+	    
+	    try {
 	    emailSender.send(message);
+	    LOG.info("END... Email sent success");
+	    } catch (Exception e) {
+	    LOG.info("Error : Email sent failure");
+	    }
 	}
 
 	public void sendMessageUsingThymeleafTemplate(String to, String subject, Map<String, Object> templateModel)
@@ -53,11 +63,11 @@ public class EmailServiceImpl implements EmailService {
 	}
 	
 	public void sendVerificationEmail(MyUser user, String siteURL)
-            throws MessagingException, UnsupportedEncodingException {
+            throws MessagingException {
 		
 		String verifyURL = siteURL + "/createPassword/" + user.getId() + "?code=" + user.getVerificationCode();
 		
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
         model.put("nameUser", user.getName());
         model.put("text", "Enregistrez votre mot de passe pour activer votre compte :");
         model.put("link", verifyURL);
@@ -68,11 +78,11 @@ public class EmailServiceImpl implements EmailService {
 	}
 	
 	public void sendResetPasswordEmail(MyUser user, String siteURL)
-            throws MessagingException, UnsupportedEncodingException {
+            throws MessagingException {
 
 		String verifyURL = siteURL + "/createPassword/" + user.getId() + "?code=" + user.getVerificationCode();
 		
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
         model.put("nameUser", user.getName());
         model.put("text", "Cliquez sur ce lien pour réinitialiser votre mot de passe : ");
         model.put("link", verifyURL);
@@ -83,11 +93,11 @@ public class EmailServiceImpl implements EmailService {
 	
 	
 	public void sendNewAccountUserEmail(MyUser user, String siteURL)
-            throws MessagingException, UnsupportedEncodingException {
+            throws MessagingException {
     	
         String verifyURL = siteURL + "/updateUser/" + user.getId();
         
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
         model.put("nameUser", "Eric");
         model.put("text", "Une demande d'ouverture de compte vient d'être effectuée, pour valider la demande :");
         model.put("link", verifyURL);
@@ -96,9 +106,9 @@ public class EmailServiceImpl implements EmailService {
 	}
 	
 	public void sendContactFormEmail(Message message)
-            throws MessagingException, UnsupportedEncodingException {
+            throws MessagingException {
     	        
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
         model.put("nameUser", "Eric");
         model.put("text", "Message de " + message.getName() + " " + message.getLastName() + " (" + message.getEmail() + ") : ");
         model.put("text2", message.getMessage());

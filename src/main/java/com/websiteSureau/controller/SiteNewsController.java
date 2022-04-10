@@ -1,6 +1,7 @@
 package com.websiteSureau.controller;
 
-import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Optional;
 
 import javax.mail.MessagingException;
 
@@ -34,18 +35,29 @@ public class SiteNewsController {
 	@PostMapping("/saveNews")
 	public String saveNews(@ModelAttribute SiteNews news, RedirectAttributes attributes) {
 		newsService.addNews(news);
-		attributes.addFlashAttribute("message2", "Nouvelle actualité ajoutée en page d'accueil.");
+		attributes.addFlashAttribute("message2", "Nouvelle actualité sauvegardée.");
+		return "redirect:/admin";
+	}
+	
+	@PostMapping("/updateNews")
+	public String uptadeNews(@ModelAttribute SiteNews news, RedirectAttributes attributes) {
+		Optional<SiteNews> opt = newsService.getNewsById(news.getId());
+		if (opt.isPresent()) {
+			SiteNews newsToUpdate = opt.get();
+			newsToUpdate.setNewsTitle(news.getNewsTitle());
+			newsToUpdate.setTexte(news.getTexte());
+			newsToUpdate.setPrivateNews(news.isPrivateNews());
+			newsService.addNews(newsToUpdate);
+			attributes.addFlashAttribute("message2", "L'actualité a bien été modifiée.");
+		} else { attributes.addFlashAttribute("message1", "Erreur : un problème est survenu.");}
 		return "redirect:/admin";
 	}
 	
 	@PostMapping("/deleteNews")
-	public String deleteNews(@RequestParam("newsId") int id, RedirectAttributes attributes) {
-		if (id==0) {
-			attributes.addFlashAttribute("message1", "Veuillez sélectionner une actualité à supprimer.");
-		} else {
-			newsService.deleteNews(id);
-			attributes.addFlashAttribute("message2", "L'actualité a bien été supprimée.");
-		}
+	public String deleteNews(@ModelAttribute SiteNews news, RedirectAttributes attributes) {
+		int id = news.getId();
+		newsService.deleteNews(id);
+		attributes.addFlashAttribute("message2", "L'actualité a bien été supprimée.");
 		return "redirect:/admin";
 	}
 	
@@ -54,16 +66,35 @@ public class SiteNewsController {
 		String[] listOfNewsletterParaph = newsletter.getTexte().split("\n");       
         model.addAttribute("newsletterTitle", newsletter.getNewsTitle());
         model.addAttribute("newsletterParaph", listOfNewsletterParaph);
-		return "newsletterPreview";
+		return "newsletterTemplate";
 	}
 	
 	@PostMapping("/sendNewsletter")
 	public ModelAndView sendNewsletter(@ModelAttribute SiteNews newsletter, RedirectAttributes attributes) 
-			throws UnsupportedEncodingException, MessagingException {
-		Iterable<MyUser> listUser = userService.getUsersBySubscriptionTrue();
-		mailService2.sendContactFormEmail(newsletter, listUser);
-		attributes.addFlashAttribute("message2", "L'actualité a bien été envoyée.");
+			throws MessagingException {
+		List<MyUser> listUsers = (List<MyUser>) userService.getUsersBySubscriptionTrue();
+		mailService2.sendNewsletter(newsletter, listUsers);
+		attributes.addFlashAttribute("message2", "La newsletter a bien été envoyée.");
 		return new ModelAndView("redirect:/admin");
+	}
+	
+	@PostMapping("/sendNewsletterTest")
+	public ModelAndView sendNewsletterTestToAdminUsers(@ModelAttribute SiteNews newsletter, RedirectAttributes attributes) 
+			throws MessagingException {
+		List<MyUser> listUsersToTest = (List<MyUser>) userService.getUsersByAuthority("ROLE_ADMIN");
+		mailService2.sendNewsletter(newsletter, listUsersToTest);
+		attributes.addFlashAttribute("message2", "Le test a bien été envoyé.");
+		return new ModelAndView("redirect:/admin");
+	}
+	
+	@PostMapping("/newsManage")
+	public ModelAndView getNewsletterPage(RedirectAttributes attributes, @RequestParam("newsId") int id) {    
+		//manage siteNews : add new siteNews for saving and add a list of siteNews for choose a siteNews to delete
+		Optional<SiteNews> newsletter = newsService.getNewsById(id);
+		if (newsletter.isPresent()) {
+			attributes.addFlashAttribute("newsletter", newsletter.get());
+		}
+		return new ModelAndView("redirect:/admin#newsManage");
 	}
 
 }

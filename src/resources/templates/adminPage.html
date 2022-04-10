@@ -8,7 +8,15 @@
 		</head>
 
 	<body>	
-			<div th:replace="fragments :: header" th:with="bdTitles=${bdTitles}"></div>  
+			<header>				
+				<div id="logo">
+					<h1> LES PETITS DESSINS d'ERIC SUREAU </h1>
+					<img th:src="@{/img/logos/ES.png}" alt="Logo"/> 
+				</div>
+				<nav class="topnav" id="myTopnav">
+					<a href="/" class="active">Retour au site</a>       
+				</nav>  
+			</header>   
 				
 			<section id="adminpage">
 			
@@ -17,8 +25,8 @@
 				<p th:text="${message1}" th:if="${message1 ne null}" id="alert-primary" style="color: rgb(242, 82, 82);"></p>
 				<p th:text="${message2}" th:if="${message2 ne null}" id="alert-primary" style="color: #F3FF84;"></p>	
 				
-				<h3>Gestion des abonnés</h3>
-
+				<h3 onclick="myFunction1()">Gestion des abonnés</h3>
+				
 				<div id="usersManage" class="container">
 									
 					<div id="scroller">
@@ -34,28 +42,38 @@
 								    <th>Mail</th>
 								    <th>Newsletter</th>
 								    <th>Caricature</th>
+								    <th>Activation</th>
 								</tr>
 								<tr th:each="user: ${users}">
 									<td><span th:text="${user.name}"> </span></td>
 									<td><span th:text="${user.lastName}"> </span></td>
-									<td><span th:text="${user.email}"> Mail </span></td>
+									<td><span th:if="${user.password} != null" th:text="${user.email}"> Mail </span>
+										<span th:if="${user.password} eq null" th:text="${user.email}" style="color: rgb(242, 82, 82);"> Mail</span></td>
 									<td><span th:if="${user.newsletterSubscription} eq true"> Abonné </span></td>
 									<td><span th:if="${user.drawing} != null" th:text=${user.drawing.name}> </span></td>
+									<td><span th:if="${user.enabled} eq 1"> ✔ </span>
+										<span th:if="${user.enabled} eq 0"> ✖ </span>
+									</td>
 									<td>
 										<a th:href="@{/updateUser/{id}(id=${user.id})}"><button>Modifier</button></a>
+									</td>
+									<td>
 										<a th:href="@{/deleteUserPage?id={id}(id=${user.id})}"><button>Supprimer</button></a>
 									</td>
-								</tr>								
+								</tr>					
 							</tbody>						
 						</table>
 														  			
 					</div>
 					
-					<h4><a th:href="@{/createUser}">Ajouter un nouvel abonné</a></h4>
+					<div id="usersManageEnd">
+						<h4><a th:href="@{/createUser}">Ajouter un nouvel abonné</a></h4>
+						<h4 th:if="${users ne null}" th:text="${users.size} + ' abonnés'"></h4>
+					</div>
 					
 				</div>
 				
-				<h3>Gestion des dessins</h3>								
+				<h3 onclick="myFunction2()">Gestion des dessins</h3>
 				
 				<div id="filesManage" class="container">
 					
@@ -108,47 +126,77 @@
 								           
 				</div>
 				
-				<h3>Gestion des actualités</h3>								
+				<h3 onclick="myFunction3()">Gestion des actualités</h3>
 				
 				<div id="newsManage" class="container">
 					
 					<div>																				                
-						<h4>Ajouter ou envoyer une actualité </h4>
-								                					    
-						<form method="post" th:action="@{/saveNews}" th:object="${siteNews}">					                    
-							
+						<h4 th:if="${newsletter} eq null">Ajouter ou envoyer une actualité </h4>		                					    
+						<form th:if="${newsletter} eq null" method="post" th:action="@{/saveNews}" th:object="${siteNews}">					                    			
+							<div class="form-group">
+								<label for="newsTitle">Titre</label> 
+								<input
+									type="text" th:field="*{newsTitle}" class="form-control" id="titleInput"
+									placeholder="Saisir le titre"> 
+							</div>	
+							<div class="form-group">
+								<textarea
+								name="newsText" th:field="*{texte}" class="form-control" id="newsText" 
+								rows="10" cols="50" required> </textarea>
+							</div>
+							<div class="form-group">
+							    <label for="privateNews">Actualité privée : </label>
+								<input th:field="*{privateNews}" type="checkbox" name="privateNews" id="privateNews" value="true">    
+							</div>												
+							<button type="submit" class="btn btn-primary">Sauvegarder</button>
+							<button th:formaction="@{/previewNewsletter}" type="submit" class="btn btn-primary">Prévisualiser</button>
+							<button th:formaction="@{/sendNewsletterTest}" type="submit" class="btn btn-primary">Tester</button>
+							<button th:formaction="@{/sendNewsletter}" type="submit" class="btn btn-primary">Envoyer</button>	
+						</form>
+						<h4 th:if="${newsletter} ne null">Modifier, supprimer ou envoyer une actualité </h4>
+						<form th:if="${newsletter} ne null" method="post" th:action="@{/updateNews}" th:object="${newsletter}">					                    						
 							<div class="form-group">
 								<label for="newsTitle">Titre</label> 
 								<input
 									type="text" th:field="*{newsTitle}" class="form-control" id="titleInput"
 									placeholder="Saisir le titre"> 
 							</div>
-			
 							<div class="form-group">
 								<textarea
-								name="texte" th:field="*{texte}" class="form-control" id="messageInput" 
-								rows="10" cols="50" required> Ecrivez votre texte ici. </textarea>
+								name="newsText" th:field="*{texte}" class="form-control" id="newsText" 
+								rows="10" cols="50" required> </textarea>
 							</div>
-															
-							<button type="submit" class="btn btn-primary">Sauvegarder</button>
-							<button th:formaction="@{/previewNewsletter}" type="submit" class="btn btn-primary">Prévisualiser</button>
-							<button th:formaction="@{/sendNewsletter}" type="submit" class="btn btn-primary">Envoyer</button>
-							
+							<div class="form-group">
+							    <label for="privateNews">Actualité privée : </label>
+								<input th:field="*{privateNews}" type="checkbox" name="privateNews" id="privateNews" value="true">    
+							</div>									
+							<div id="newsId" class="form-group">
+								<input type="hidden" th:field="*{id}" class="form-control">
+							</div>				
+							<div>							
+								<button type="submit" class="btn btn-primary">Modifier</button>
+								<button th:formaction="@{/deleteNews}" type="submit" class="btn btn-primary">Supprimer</button>
+							</div>
+							<div>
+								<button th:formaction="@{/previewNewsletter}" type="submit" class="btn btn-primary">Prévisualiser</button>
+								<button th:formaction="@{/sendNewsletterTest}" type="submit" class="btn btn-primary">Tester</button>
+								<button th:formaction="@{/sendNewsletter}" type="submit" class="btn btn-primary">Envoyer</button>
+							</div>				
 						</form>
   					</div>
   					
   					<div>					
-					    <h4>Supprimer une actualité </h4>			 
+					    <h4>Sélectionner une actualité à modifier</h4>			 
 					    					       
-					     <form method="post" th:action="@{/deleteNews}">				                
+					     <form method="post" th:action="@{/newsManage}">				                
 							<div class="form-group">
 								<label for="nameFile"> Titre </label>
-								<select name="newsId" id="newsId	">
-									<option selected value="0">Sélectionner une actualité à supprimer</option>
+								<select name="newsId" id="newsId">
+									<option selected value="0">Sélectionner une actualité à modifier</option>
 									<option th:each="sn: ${listSiteNews}" th:value="${sn.id}" th:text="${sn.date} + '/' + ${sn.id}" ></option>
 								</select>
 							</div>					                    
-					       	<button type="submit" class="btn btn-primary">Supprimer</button>           					                    
+					       	<button type="submit" class="btn btn-primary">Sélectionner</button>
 						
 						</form>       
 					   
@@ -159,6 +207,31 @@
 			</section>
 			
 			<th:block th:insert="~{fragments :: footer}"></th:block> 
-	 
+	 <script>
+		function myFunction1() {
+		  var x = document.getElementById('usersManage');
+		  if (x.style.display === 'none') {
+		    x.style.display = 'block';
+		  } else {
+		    x.style.display = 'none';
+		  }
+		}
+		function myFunction2() {
+			  var x = document.getElementById('filesManage');
+			  if (x.style.display === 'none') {
+			    x.style.display = 'flex';
+			  } else {
+			    x.style.display = 'none';
+			  }
+			}
+		function myFunction3() {
+			  var x = document.getElementById('newsManage');
+			  if (x.style.display === 'none') {
+			    x.style.display = 'flex';
+			  } else {
+			    x.style.display = 'none';
+			  }
+			}
+	</script>
 	</body>
 </html>

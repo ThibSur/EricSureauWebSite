@@ -1,5 +1,7 @@
 package com.websiteSureau.configuration;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +11,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 import com.websiteSureau.service.MyUserDetailsService;
 
@@ -20,6 +24,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private MyUserDetailsService userDetailsService;
+    
+    @Autowired
+    private DataSource dataSource;
 
     @Bean
     public DaoAuthenticationProvider authProvider() {
@@ -36,27 +43,50 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests()
-		 	.antMatchers("/", "/contact", "/saveUser", "/createPassword/**", "/savePassword", 
-		 				"/createUser/**", "/sendMessage", "/css/*.css", "/js/*.js", "/comicsP**",
-		 				"/imagesP", "/author", "/displayImage","/img/logos/**", "/fragments", "/legal", "/resetPassword")
-		 				.permitAll()
-		 	.antMatchers("/admin", "/updateUser/*", "/uploadFile", "/deleteFile", "/saveNews", "/deleteNews", "/sendNewsletter", 
-		 				"/previewNewsletter", "/deleteUser/*", "/drawingUpdatePage", "/updateDrawing", "/deleteFilePage")
-		 				.hasAnyAuthority("ROLE_ADMIN")
-			.anyRequest().hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+			http
+			.authorizeRequests()
+			 	.antMatchers("/", "/contact", "/saveUser", "/createPassword/**", "/savePassword", 
+			 				"/createUser/**", "/sendMessage", "/css/*.css", "/js/*.js", "/comicsP**",
+			 				"/imagesP", "/author", "/displayImage","/img/logos/**", "/fragments", "/legal", "/resetPassword")
+			 			.permitAll()
+			 	.antMatchers("/admin", //adminPage
+			 				"/updateUser/*", "/updateUser", "/deleteUser/*", //UsersManagement
+			 				"/uploadFile", "/deleteFile", "/drawingUpdatePage", "/updateDrawing", "/deleteFilePage", //FilesManagement
+			 				"/saveNews", "/deleteNews", "/updateNews", "/newsManage", //siteNewsManagement
+			 				"/previewNewsletter", "/sendNewsletterTest", "/sendNewsletter" //siteNewsManagement
+			 				)
+			 			.hasAnyAuthority("ROLE_ADMIN")
+				.anyRequest().hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+				.and()    
+			.rememberMe()
+		        .tokenRepository(persistentTokenRepository())
+		        .userDetailsService(this.userDetailsService)
+		        .tokenValiditySeconds(86400*90)
 			.and()
 		.formLogin()
 			.loginPage("/login")
+			.defaultSuccessUrl("/")
+	        .failureUrl("/login")
 	        .permitAll()
 	        .and()
 	    .logout()
-	        .permitAll();
+	        .permitAll()
+	        .and()
+	    .sessionManagement()
+            .maximumSessions(2)
+            .and();
 	}
     
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl db = new JdbcTokenRepositoryImpl();
+		db.setDataSource(dataSource);
+        return db;
+   }
     
 }

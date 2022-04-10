@@ -53,18 +53,13 @@
 						
 					</article>
 
-					<aside id = "comicsp1"  th:if="${comicsMonth ne null}">
-						
-						<p> <strong th:text="${comicsMonth.title}"> </strong> </p>
+					<aside th:if="${drawingMonth ne null}">
 						
 						<figure>
-							<a th:href="@{/comicsP?page=0#bd}">  
-							<img id="comicsMonth" th:src="@{'/imagesP?name=' + ${comicsMonth.name}}" th:alt="${comicsMonth.name}" title="Cliquez pour agrandir" /></a>
+							<figcaption> Dessin du mois </figcaption>
+							<a th:href="@{'/displayImage' +'?name=' + ${drawingMonth.name}}">  
+							<img id="drawingMonth" th:src="@{'/imagesP?name=' + ${drawingMonth.name}}" th:alt="${drawingMonth.name}" title="Cliquez pour agrandir" /></a>
 						</figure>
-						
-						<p>
-							N'hésitez pas à vous <a href = "/createUser" > inscrire </a> pour lire la suite de cette BD !
-						</p>
 						
 					</aside>
 				
@@ -72,24 +67,26 @@
 
 				<div id="news">
 
-					<figure th:if="${drawingMonth ne null}">
-						<figcaption> Dessin du mois </figcaption>
-						<a th:href="@{'/displayImage' +'?name=' + ${drawingMonth.name}}">  
-						<img id="drawingMonth" th:src="@{'/imagesP?name=' + ${drawingMonth.name}}" th:alt="${drawingMonth.name}" title="Cliquez pour agrandir" /></a>
+					<figure th:if="${comicsMonth ne null}">
+						<figcaption th:text="'BD en cours : ' + ${comicsMonth.title}"> </figcaption>
+						<a th:href="@{/comicsP?page=0#bd}">  
+						<img id="comicsMonth" th:src="@{'/imagesP?name=' + ${comicsMonth.name}}" th:alt="${comicsMonth.name}" title="Cliquez pour agrandir" /></a>
 					</figure>
 					
-					<article th:each="date: ${siteNewsDate}"> 
-					<h4 th:text="${dateInLetters[dateStat.index]}"> </h4>
-					
-						<div th:each="currentNews : ${siteNews}" th:if="${currentNews.date} eq ${date}"> 
+					<div id="art">
+						<h2>Actualités du site</h2>
+						<article th:each="date: ${siteNewsDate}"> 
+						<h4 th:text="${dateInLetters[dateStat.index]}"> </h4>
 						
-							<strong th:text="${currentNews.newsTitle}"> </strong>
-							<p th:text="${currentNews.texte}">	</p>
-						
-						</div>
+							<div th:each="currentNews : ${siteNews}" th:if="${currentNews.date} eq ${date}"> 
 							
-					</article>
-										
+								<strong th:text="${currentNews.newsTitle}"> </strong>
+								<p th:text="${currentNews.texte}">	</p>
+							
+							</div>
+								
+						</article>
+					</div>					
 				</div>
 
 			</section>

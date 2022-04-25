@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
 *
-* webapp to save and display drawings, caricatures, comics and news on the website ericsureau.fr.
+* webapp to save and display drawings, caricatures, comics and news on a website.
 * Most of the drawings are only accessible after registration (springsecurity)
 *
 * @author  Thibault Sureau

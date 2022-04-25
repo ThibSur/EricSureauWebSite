@@ -2,10 +2,13 @@ package com.websiteSureau.controller;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +20,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.websiteSureau.model.Drawing;
 import com.websiteSureau.model.MyUser;
+import com.websiteSureau.repository.FileAWSS3Repository;
 import com.websiteSureau.service.DrawingService;
+import com.websiteSureau.service.DrawingServiceImpl;
 import com.websiteSureau.service.FilesService;
 import com.websiteSureau.service.UserService;
 
@@ -31,7 +36,12 @@ public class FilesDrawingController {
 	private DrawingService drawingService;
 	
 	@Autowired
+	private DrawingServiceImpl drawingService2;
+	
+	@Autowired
 	private UserService userService;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(FileAWSS3Repository.class);
 	    
     @PostMapping("/uploadFile")
     public String uploadFile(@RequestParam("file") MultipartFile file, @ModelAttribute Drawing drawing, RedirectAttributes attributes) throws Exception {
@@ -54,22 +64,32 @@ public class FilesDrawingController {
     
     @GetMapping("/images")
     public ResponseEntity<Object> findByNamePrivate(@RequestParam String name) {
-        return ResponseEntity
-                .ok()
-                .cacheControl(CacheControl.noCache())
-                .header("Content-type", "application/octet-stream")
-                .header("Content-disposition", "attachment; filename=\"" + name + "\"")
-                .body(new InputStreamResource(fileService.findByName("staticimages/private/" + name)));
+    	try {
+	        return ResponseEntity
+	                .ok()
+	                .cacheControl(CacheControl.noCache())
+	                .header("Content-type", "application/octet-stream")
+	                .header("Content-disposition", "attachment; filename=\"" + name + "\"")
+	                .body(new InputStreamResource(fileService.findByName("staticimages/private/" + name)));
+    	} catch (Exception e) {
+    		LOG.error("Error occurred while downloading the file, " + name + " does not exist");
+    		return null;
+    	}
     }
     
     @GetMapping("/imagesP")
     public ResponseEntity<Object> findByNamePublic(@RequestParam String name) {
-        return ResponseEntity
-                .ok()
-                .cacheControl(CacheControl.noCache())
-                .header("Content-type", "application/octet-stream")
-                .header("Content-disposition", "attachment; filename=\"" + name + "\"")
-                .body(new InputStreamResource(fileService.findByName("staticimages/public/" + name)));
+    	try {
+	        return ResponseEntity
+	                .ok()
+	                .cacheControl(CacheControl.noCache())
+	                .header("Content-type", "application/octet-stream")
+	                .header("Content-disposition", "attachment; filename=\"" + name + "\"")
+	                .body(new InputStreamResource(fileService.findByName("staticimages/public/" + name)));
+	    } catch (Exception e) {
+			LOG.error("Error occurred while downloading the file, " + name + " does not exist");
+			return null;
+		}
     }
     
     @PostMapping("/deleteFile")
@@ -140,6 +160,12 @@ public class FilesDrawingController {
     	}
     	
     	return "redirect:/admin";
+    }
+    
+    @PostMapping("/addDrawingLike")
+    public String addDrawingLike(@RequestParam("nameFile") String fileName) {
+    	drawingService2.addLikeToDrawing(fileName, SecurityContextHolder.getContext().getAuthentication().getName());
+    	return "redirect:/"; 	
     }
 
 }

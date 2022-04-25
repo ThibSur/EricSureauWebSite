@@ -45,9 +45,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 			http
 			.authorizeRequests()
-			 	.antMatchers("/", "/contact", "/saveUser", "/createPassword/**", "/savePassword", 
-			 				"/createUser/**", "/sendMessage", "/css/*.css", "/js/*.js", "/comicsP**",
-			 				"/imagesP", "/author", "/displayImage","/img/logos/**", "/fragments", "/legal", "/resetPassword")
+			 	.antMatchers("/", "/saveUser", "/createPassword/**", "/savePassword", "/createUser/**", "/resetPassword", //HomePage and UserManagement
+			 				"/contact", "/sendMessage", "/comicsP**",	"/imagesP", "/displayImage", //contact and public comics / drawings
+			 				 "/css/*.css", "/js/*.js", "/img/logos/**", "/fragments", "/legal", "/author") //other pages and css, logos, fragments.... 
 			 			.permitAll()
 			 	.antMatchers("/admin", //adminPage
 			 				"/updateUser/*", "/updateUser", "/deleteUser/*", //UsersManagement
@@ -55,8 +55,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 			 				"/saveNews", "/deleteNews", "/updateNews", "/newsManage", //siteNewsManagement
 			 				"/previewNewsletter", "/sendNewsletterTest", "/sendNewsletter" //siteNewsManagement
 			 				)
-			 			.hasAnyAuthority("ROLE_ADMIN")
-				.anyRequest().hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+			 			.hasAnyRole("ADMIN")
+				.anyRequest().hasAnyRole("USER", "ADMIN")
 				.and()    
 			.rememberMe()
 		        .tokenRepository(persistentTokenRepository())

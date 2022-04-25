@@ -5,6 +5,8 @@ import java.util.Optional;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.websiteSureau.model.Drawing;
 import com.websiteSureau.model.MyUser;
+import com.websiteSureau.repository.FileAWSS3Repository;
 import com.websiteSureau.repository.UserRepository;
 
 import lombok.Data;
@@ -30,6 +33,8 @@ public class UserService {
 	private EmailServiceImpl mailService;
     
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    
+    private static final Logger LOG = LoggerFactory.getLogger(FileAWSS3Repository.class);
 	
     public Optional<MyUser> getUser(final int id) {
         return userRepository.findById(id);
@@ -71,6 +76,7 @@ public class UserService {
     public void saveUser(MyUser user, String siteURL) throws MessagingException {
     	user.setUserName(user.getEmail());
 	   	userRepository.save(user);
+	   	LOG.info("NewUser saved");
 	   	mailService.sendNewAccountUserEmail(user,siteURL);
 	}
     
@@ -94,9 +100,10 @@ public class UserService {
 			if (currentUser.getEnabled()==0 && user.getEnabled()==1) {			  	
 				String randomCode = RandomString.make(64);		    	
 				currentUser.setVerificationCode(randomCode);
-				currentUser.setAuthority("ROLE_USER");
+				currentUser.setAuthority("USER");
 				currentUser.setEnabled(user.getEnabled());			
 				mailService.sendVerificationEmail(currentUser, siteURL);
+				LOG.info("User is activated");
 			}		
 			userRepository.save(currentUser);
     	}
@@ -150,28 +157,27 @@ public class UserService {
     
     //Automatic validation of a user after a delay
     @Async
-	public void activateUser(MyUser user, String siteURL, int seconds) throws MessagingException {
-		Optional<MyUser> e = getUser(user.getId());
-		if (e.isPresent()) {
-			try {
-				System.out.println("Execute activateUser asynchronously started - " + Thread.currentThread().getName());
-				Thread.sleep(seconds * 1000);
-				if (e.get().getEnabled() == 0) {
-					String randomCode = RandomString.make(64);
-					user.setVerificationCode(randomCode);
-					user.setAuthority("ROLE_USER");
-					user.setEnabled(1);
-					mailService.sendVerificationEmail(user, siteURL);
-					userRepository.save(user);
-					System.out.println("User is activated");
-				}
-				Thread.currentThread().interrupt();
-				System.out.println("Execute method activateUser finished - " + Thread.currentThread().getName());
-			} catch (InterruptedException ie) {
-				Thread.currentThread().interrupt();
-			}
-		}
-	 }
+	public void activateUser(MyUser user, String siteURL, int seconds) throws MessagingException {		
+    	try {
+    		System.out.println("Execute activateUser asynchronously started - " + Thread.currentThread().getName());
+    		Thread.sleep(seconds * 1000);
+    	} catch (InterruptedException ie) {
+    		Thread.currentThread().interrupt();
+    		System.out.println("Execute method activateUser interrupted - " + Thread.currentThread().getName());
+    	}
+    	Optional<MyUser> e = getUser(user.getId());
+    	if (e.isPresent() && e.get().getEnabled() == 0) {
+    		String randomCode = RandomString.make(64);
+    		user.setVerificationCode(randomCode);
+    		user.setAuthority("USER");
+    		user.setEnabled(1);
+    		mailService.sendVerificationEmail(user, siteURL);
+    		userRepository.save(user);
+    		System.out.println("User is activated");
+    	}
+    	Thread.currentThread().interrupt();
+    	System.out.println("Execute method activateUser finished - " + Thread.currentThread().getName());			
+	}	
 
     //Deleting verification code after a delay
 	@Async

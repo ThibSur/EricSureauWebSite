@@ -39,7 +39,7 @@ public class FileAWSS3Repository {
     }
     
     public S3ObjectInputStream findByName(String fileName) {
-    	try { 
+    	try {
     		return amazonS3.getObject(s3BucketName, fileName).getObjectContent();
     	} catch (Exception e) {
     		LOG.error("Error {} occurred while downloading the file", e.getLocalizedMessage());

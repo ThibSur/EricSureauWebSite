@@ -28,10 +28,9 @@ public class MyUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException(userName);
         }
         
-	
         UserDetails user = User.withUsername(myuser.getUserName())
 	        								.password(myuser.getPassword())
-        									.authorities(myuser.getAuthority())
+        									.roles(myuser.getAuthority())
         									.disabled(myuser.getEnabled()==0)
         									.build();
         

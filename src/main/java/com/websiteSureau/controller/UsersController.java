@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -118,20 +117,15 @@ public class UsersController {
 		return "formDeleteUser";		
 	}                                               
 	
-	//delete user by id, this method can also be called by a user with user role.
+	//delete user by id.
 	@PostMapping("/deleteUser/{id}")
 	public ModelAndView deleteUser(@PathVariable("id") final int id, HttpServletRequest request) {
-		String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-		String userRole = userService.getUserRole(currentUser);
-		if (userRole.equals("ROLE_ADMIN")) {
+		try {
 			userService.deleteUser(id);
-			return new ModelAndView("redirect:/admin");
-		} else {
-			MyUser user = userService.getUserByUserName(currentUser);
-			userService.deleteUser(user.getId());
-			request.getSession().invalidate();
-			return new ModelAndView("redirect:/");
+		} catch (Exception e ) {
+			System.out.println("error occuring when deleting user with id :" + id);		
 		}
+		return new ModelAndView("redirect:/admin");
 	}                                                                                                        
 
 	@GetMapping("/createPassword/{id}")

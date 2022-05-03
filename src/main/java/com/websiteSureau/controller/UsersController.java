@@ -33,7 +33,7 @@ public class UsersController {
 	
 	@Autowired
 	private DrawingService serviceDrawing;
-	
+		 
 	@GetMapping("/createUser")
 	public String createUser(Model model) { 	
 		MyUser s = new MyUser();
@@ -52,7 +52,7 @@ public class UsersController {
 			userEmailAlreadyExist = true;
 		} else {
     		userService.saveUser(user, getSiteURL(request));
-    		userService.activateUser(user, getSiteURL(request), 3600);
+    		userService.activateUser(user, getSiteURL(request), 5);
     	}
 	    attributes.addFlashAttribute("userAlreadyExist", userEmailAlreadyExist);
 	    return "redirect:/createUser";
@@ -159,4 +159,5 @@ public class UsersController {
 	    attributes.addFlashAttribute("passwordReseted", r);    
 	    return "redirect:/resetPassword";	
 	}
+
 }

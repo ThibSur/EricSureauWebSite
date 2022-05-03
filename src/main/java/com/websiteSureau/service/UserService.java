@@ -1,6 +1,9 @@
 package com.websiteSureau.service;
 
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
@@ -15,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import com.websiteSureau.model.Drawing;
 import com.websiteSureau.model.MyUser;
-import com.websiteSureau.repository.FileAWSS3Repository;
 import com.websiteSureau.repository.UserRepository;
 
 import lombok.Data;
@@ -34,7 +36,7 @@ public class UserService {
     
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     
-    private static final Logger LOG = LoggerFactory.getLogger(FileAWSS3Repository.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 	
     public Optional<MyUser> getUser(final int id) {
         return userRepository.findById(id);
@@ -72,7 +74,7 @@ public class UserService {
     	userRepository.deleteById(id);
     }
     
-  //saves a new user but not activates him.
+    //saves a new user but not activates him.
     public void saveUser(MyUser user, String siteURL) throws MessagingException {
     	user.setUserName(user.getEmail());
 	   	userRepository.save(user);
@@ -184,16 +186,16 @@ public class UserService {
 	public void deleteVerificationCode(MyUser user, int seconds) {
 		MyUser us = userRepository.findByUserName(user.getEmail());
 		System.out.println("Execute deleteVerificationCode asynchronously started - " + Thread.currentThread().getName());
-		try {
-			Thread.sleep(seconds * 1000);
-				if (us.getVerificationCode()!=null) {
-					us.setVerificationCode(null);
-					userRepository.save(us);	
+		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+		Runnable runnableTask = () -> {
+			if (us.getVerificationCode()!=null) {
+				us.setVerificationCode(null);
+				userRepository.save(us);	
 				}
-			Thread.currentThread().interrupt();
 			System.out.println("Execute method deleteVerificationCode finished - " + Thread.currentThread().getName());
-		 } catch (InterruptedException ie) {
-		    	Thread.currentThread().interrupt();
-		 }
+			};
+		scheduler.schedule(runnableTask , seconds, TimeUnit.SECONDS);
+		scheduler.shutdown();
 	}
+	
 }

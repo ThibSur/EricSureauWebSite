@@ -3,6 +3,12 @@ package com.websiteSureau.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
@@ -43,16 +49,17 @@ public class EmailServiceImpl2 extends EmailServiceImpl {
         		model.put("nameUser", listOfEmailUsers.get(i).getName());
         		sendMessageUsingThymeleafTemplate(listOfEmailUsers.get(i).getEmail(), "Les petits dessins d'Eric Sureau", model);
 	        	if (y==60) {
-	        		try {
-	 					Thread.sleep(1000*86400);
-	 				} catch (InterruptedException e) {
-	 					e.printStackTrace();
-	 					Thread.currentThread().interrupt();
-	 				}
-	        		 y=0;
+	        		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+	        		Callable<Integer> task = () -> 0;
+	        		ScheduledFuture<Integer> future = scheduler.schedule(task, 86400, TimeUnit.SECONDS);
+				    try {
+						y=future.get();
+					} catch (InterruptedException | ExecutionException e) {
+						e.printStackTrace();
+					}
+				    scheduler.shutdown();
 	        	}
 	        }
-	        Thread.currentThread().interrupt();       
         } else {
 			for (MyUser listOfEmailUser : listOfEmailUsers) {
 				model.put("nameUser", listOfEmailUser.getName());

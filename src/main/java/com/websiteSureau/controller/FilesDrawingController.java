@@ -22,7 +22,7 @@ import com.websiteSureau.model.Drawing;
 import com.websiteSureau.model.MyUser;
 import com.websiteSureau.repository.FileAWSS3Repository;
 import com.websiteSureau.service.DrawingService;
-import com.websiteSureau.service.DrawingServiceImpl;
+import com.websiteSureau.service.DrawingServiceAdditionalFunctions;
 import com.websiteSureau.service.FilesService;
 import com.websiteSureau.service.UserService;
 
@@ -36,7 +36,7 @@ public class FilesDrawingController {
 	private DrawingService drawingService;
 	
 	@Autowired
-	private DrawingServiceImpl drawingService2;
+	private DrawingServiceAdditionalFunctions drawingService2;
 	
 	@Autowired
 	private UserService userService;

@@ -21,6 +21,7 @@ import com.websiteSureau.model.SiteNews;
 import com.websiteSureau.service.CalendarService;
 import com.websiteSureau.service.DrawingService;
 import com.websiteSureau.service.SiteNewsService;
+import com.websiteSureau.service.UserReportingConnectionService;
 import com.websiteSureau.service.UserService;
 
 @Controller
@@ -37,6 +38,9 @@ public class WebsiteController {
 	
 	@Autowired
 	private CalendarService calendarService;
+	
+	@Autowired
+	private UserReportingConnectionService userConnectionService;
 	
 	@Autowired
 	Map<String, Object> menuAttributes;
@@ -75,6 +79,10 @@ public class WebsiteController {
 		Iterable<MyUser> listUser = userService.getUsers();
 		model.addAttribute("users", listUser);
 		
+		//manage connections : add list of all users
+		int numberOfConnections = userConnectionService.getConnexionsNumber();
+		model.addAttribute("numberOfConnections", numberOfConnections);
+		
 		//manage drawings : add new drawing for saving and add a list of drawings for choose a drawing to delete
 		Drawing dr = new Drawing();
 		model.addAttribute("drawing", dr);
@@ -86,7 +94,7 @@ public class WebsiteController {
 		model.addAttribute("siteNews", sn);
 		List<SiteNews> listSiteNews = newsService.getNews();
 		model.addAttribute("listSiteNews", listSiteNews);
-		
+	
 		return "adminPage";
 	}
 	

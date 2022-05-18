@@ -27,8 +27,8 @@
 		<div>
 					       			       	
 		    <figure>
-				<img th:if="${drawing.type eq 'Dessin-du-Mois'}" th:src="@{'/imagesP' +'?name=' + ${drawing.name}}"/>
-				<img th:if="${drawing.type ne 'Dessin-du-Mois'}" th:src="@{'/images' +'?name=' + ${drawing.name}}"/>
+				<img th:if="${drawing.type eq 'Dessin-du-Mois'}" th:src="@{'/getFileP' +'?name=' + ${drawing.name}}"/>
+				<img th:if="${drawing.type ne 'Dessin-du-Mois'}" th:src="@{'/getFile' +'?name=' + ${drawing.name}}"/>
 				<figcaption th:text="${drawing.name}"></figcaption>
 			</figure>
 				
@@ -46,13 +46,7 @@
 				<div class="form-group">
 					<label for="type">Type</label> 
 					<select th:field="*{type}" name="typeDrawing" id="typeDrawing">
-						<option value="Actualités">Actualités</option>
-						<option value="Environnement">Environnement</option>
-						<option value="Sport">Sport</option>
-						<option value="Personnel">Personnel</option>
-						<option value="Caricatures">Caricatures</option>
-						<option value="BD">Bande dessinée</option>
-						<option value="Dessin-du-Mois">Dessin du mois</option>
+						<option th:each="dt: ${drawingTypes}" th:value="${dt}" th:text="${dt}" ></option>
 					</select>
 				</div>					
 

@@ -10,6 +10,7 @@ import java.util.TimeZone;
 
 import javax.transaction.Transactional;
 
+import com.websiteSureau.model.DrawingType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class DrawingService {
 	protected DrawingRepository drawingRepository;
     
     public Iterable<Drawing> getDrawings() {
-        return drawingRepository.findAll();
+        return drawingRepository.findAllByOrderByName();
     }
     
     public Optional<Drawing> getDrawing(final int id) {
@@ -95,7 +96,7 @@ public class DrawingService {
 	}
 	
 	public String[] getComicsTitles() {		
-		Iterable<Drawing> listDrawings = drawingRepository.findByType("BD");    			
+		Iterable<Drawing> listDrawings = drawingRepository.findByType(DrawingType.COMICS);
 		HashSet<String> hash = new HashSet<>();
 	   	for (Drawing d:listDrawings) {
 			hash.add(d.getTitle());

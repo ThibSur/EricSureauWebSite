@@ -48,7 +48,7 @@ public class EmailServiceImpl implements EmailService {
 	    emailSender.send(message);
 	    LOG.info("END... Email sent success");
 	    } catch (Exception e) {
-	    LOG.info("Error : Email sent failure");
+	    LOG.error("Error : Email sent failure");
 	    }
 	}
 

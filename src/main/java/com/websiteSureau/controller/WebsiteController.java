@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.websiteSureau.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -14,10 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.websiteSureau.model.Drawing;
-import com.websiteSureau.model.Message;
-import com.websiteSureau.model.MyUser;
-import com.websiteSureau.model.SiteNews;
 import com.websiteSureau.service.CalendarService;
 import com.websiteSureau.service.DrawingService;
 import com.websiteSureau.service.SiteNewsService;
@@ -38,7 +35,7 @@ public class WebsiteController {
 	
 	@Autowired
 	private CalendarService calendarService;
-	
+
 	@Autowired
 	private UserReportingConnectionService userConnectionService;
 	
@@ -54,8 +51,8 @@ public class WebsiteController {
 		model.mergeAttributes(menuAttributes);
 		
 		//add drawing of the month and first page of current comics (to display in home page)
-	    ArrayList<Drawing> drawingOfTheMonth = serviceDrawing.getDrawingsByType("Dessin-du-Mois");
-	    ArrayList<Drawing> comicsOfTheMonth = serviceDrawing.getDrawingsByType("BD_Accueil");
+	    ArrayList<Drawing> drawingOfTheMonth = serviceDrawing.getDrawingsByType(DrawingType.MONTH_DRAWING);
+	    ArrayList<Drawing> comicsOfTheMonth = serviceDrawing.getDrawingsByType(DrawingType.HOME_COMICS);
 		if (!drawingOfTheMonth.isEmpty()) model.addAttribute("drawingMonth", drawingOfTheMonth.get(drawingOfTheMonth.size()-1));
 		if (!comicsOfTheMonth.isEmpty()) model.addAttribute("comicsMonth", comicsOfTheMonth.get(0));
 	    
@@ -79,16 +76,17 @@ public class WebsiteController {
 		Iterable<MyUser> listUser = userService.getUsers();
 		model.addAttribute("users", listUser);
 		
-		//manage connections : add list of all users
-		int numberOfConnections = userConnectionService.getConnexionsNumber();
-		model.addAttribute("numberOfConnections", numberOfConnections);
-		
+		//manage connections : add connections number month
+		int numberOfConnectionsMonth = userConnectionService.getConnectionsNumberFromUsersForTheCurrentMonth();
+		model.addAttribute("numberOfConnectionsMonth", numberOfConnectionsMonth);
+
 		//manage drawings : add new drawing for saving and add a list of drawings for choose a drawing to delete
 		Drawing dr = new Drawing();
 		model.addAttribute("drawing", dr);
 		Iterable<Drawing> drawings = serviceDrawing.getDrawings();
 		model.addAttribute("drawings", drawings);
-		
+		model.addAttribute("drawingTypes", DrawingType.TYPES);
+
 		//manage siteNews : add new siteNews for saving and add a list of siteNews for choose a siteNews to delete
     	SiteNews sn = new SiteNews();
 		model.addAttribute("siteNews", sn);
@@ -96,6 +94,12 @@ public class WebsiteController {
 		model.addAttribute("listSiteNews", listSiteNews);
 	
 		return "adminPage";
+	}
+
+	@GetMapping("/admin/monthsConnections")
+	public String getmonthsConnections(Model model) {
+		model.addAttribute("connectionsMonth", userConnectionService.getUserConnections());
+		return "adminMonthsConnections";
 	}
 	
 	// Get the custom loginPage.
@@ -137,8 +141,8 @@ public class WebsiteController {
 		model.mergeAttributes(menuAttributes);
 	    
 		//add drawings to display depending on the type of drawing (sorted by dates)
-	    String[] typesOfDrawings = {"Actualités", "Environnement", "Sport", "Personnel", "Caricatures"};
-	    String typeofDrawing = typesOfDrawings[type];	      
+	    String[] typesOfDrawings = {DrawingType.NEWS, DrawingType.ENVIRONMENT, DrawingType.SPORT, DrawingType.PERSONAL, DrawingType.CARICATURE};
+	    String typeofDrawing = typesOfDrawings[type];
 	    ArrayList<Drawing> listofDrawingsOfTheType = serviceDrawing.getDrawingsByType(typeofDrawing);
 	    ArrayList<String> drawingsDate = serviceDrawing.getDrawingsDate(listofDrawingsOfTheType);
 	    String[] dateInLetters = calendarService.createArrayWithDateinLetters(drawingsDate); 
@@ -158,9 +162,9 @@ public class WebsiteController {
 		model.mergeAttributes(menuAttributes);
 	    
 		//add pages of the comics to display depending on the type of drawing (=BD) and the title of the drawing 
-		Iterable<Drawing> listDrawingsOfTheType = serviceDrawing.getDrawingsByType("BD");		
+		Iterable<Drawing> listDrawingsOfTheType = serviceDrawing.getDrawingsByType(DrawingType.COMICS);
 		String[] titles = serviceDrawing.getComicsTitles();
-		String titleSelectedBD = titles[id];		   	
+		String titleSelectedBD = titles[id];
 		ArrayList<String> pagesOfTheComics = new ArrayList<>();
 	    for (Drawing d : listDrawingsOfTheType) {
 	    	if (d.getTitle().equals(titles[id])) pagesOfTheComics.add(d.getName());
@@ -192,7 +196,7 @@ public class WebsiteController {
 		model.mergeAttributes(menuAttributes);
 	    
 		//add pages of the comics to display depending on the type of drawing (=BD_Accueil)
-		Iterable<Drawing> listDrawingsOfTheType = serviceDrawing.getDrawingsByType("BD_Accueil");		   	
+		Iterable<Drawing> listDrawingsOfTheType = serviceDrawing.getDrawingsByType(DrawingType.HOME_COMICS);
 		ArrayList<String> pagesOfTheComics = new ArrayList<>();
 	    for (Drawing d : listDrawingsOfTheType) {
 	    	pagesOfTheComics.add(d.getName());
@@ -245,7 +249,7 @@ public class WebsiteController {
     		userRole = userService.getUserRole(currentUser);
     		loginUserName = user.getName();
         	if (user.getDrawing() != null) {
-        		logDrawing = "/images" + "?name=" + user.getDrawing().getName();
+        		logDrawing = "/getFile" + "?name=" + user.getDrawing().getName();
         		}
     		}
     	menuAttributes.put("userRole", userRole);

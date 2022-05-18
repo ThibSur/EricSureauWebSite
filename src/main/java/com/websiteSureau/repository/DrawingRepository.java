@@ -10,5 +10,6 @@ import com.websiteSureau.model.Drawing;
 public interface DrawingRepository extends JpaRepository<Drawing, Integer> {
 	ArrayList<Drawing> findByType(String type);
 	Drawing findByName(String name);
+	Iterable<Drawing> findAllByOrderByName();
 }
 

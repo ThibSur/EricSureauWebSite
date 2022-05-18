@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+		<head>
+			<meta charset="UTF-8">
+			<title>Admin</title>
+			<link th:href="@{/css/style.css}" rel="stylesheet" />
+			<link rel="icon" th:href="@{/img/logos/ES.png}">
+			<style type="text/css">
+				 .chart{
+					display:table;
+					width:60%;
+					max-width:700px;
+					height:500px;
+					margin:0 auto;
+				 }
+				li{
+					position:relative;
+					display:table-cell;
+					vertical-align:bottom;
+					height:200px;
+				}
+				span{
+					text-align: center;
+					margin:0 1em;
+					display: block;
+					background: DarkBlue;
+				}
+				p{
+					text-align: center;
+				}
+		</style>
+		</head>
+
+	<body>	
+			<header>				
+				<div id="logo">
+					<h1> LES PETITS DESSINS d'ERIC SUREAU </h1>
+					<img th:src="@{/img/logos/ES.png}" alt="Logo"/> 
+				</div>
+				<nav class="topnav" id="myTopnav">
+					<a href="javascript:history.back()" class="active">Retour</a>       
+				</nav>  
+			</header>   
+				
+			<section id="adminpage">
+				<h2 class="h2">Administrateur</h2>
+				<h3>Gestion des connexions</h3>
+				<div id="usersManage" class="container">
+					<ul class="chart">
+						<li th:each="connection: ${connectionsMonth}">
+							<span th:text="${connection.numberOfConnections}" th:style="'height:' + ${connection.numberOfConnections} + '%'"> </span>
+							<p th:text="${connection.month}"></p>
+						</li>
+					</ul>
+				</div>
+			</section>
+	</body>
+</html>

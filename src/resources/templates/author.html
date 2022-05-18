@@ -11,12 +11,12 @@
 			
 		<div th:replace="fragments :: header" th:with="bdTitles=${bdTitles} and userRole=${userRole}"></div>  
 				
-		<section id = "author">
+		<section>
 		
+		<div id= "author">
 			<figure>
 				<img id = "auteur" th:src="@{/img/logos/Riquet.jpg}" alt= "L'auteur"/>
-			</figure>
-		
+			</figure>		
 			<aside>
 				<p>
 					Tout petit déjà, j'adorais dessiner des "petits mickeys". Elevé aux bandes dessinées franco-belges, 
@@ -32,8 +32,14 @@
 					Cette parenthèse d'une grosse trentaine d'années étant maintenant refermée, j'ai de nouveau l'occasion de me 
 					consacrer à 100% à ma passion.
 					</p>
-			
 			</aside>
+		</div>
+		<div id="drawingVideo">
+			<h3>🖉🖍🖌 Réalisation d'un dessin 🖌🖍🖉</h3>
+			<video autoplay muted loop>
+			  <source th:src="@{/getFile?name=Drawing.mp4}" type="video/mp4">
+			</video>
+		</div>
 					
 		</section>
 		

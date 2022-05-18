@@ -11,8 +11,8 @@
 		<div id="displayImage" th:if="${drawing.privateDrawing} eq false">
 				
 			<a href="javascript:history.back()"  th:switch="${drawing.type}">		
-				<img th:case="'Dessin-du-Mois'" th:src="@{'/imagesP' +'?name=' + ${drawing.name}}"/>
-				<img th:case="*" th:src="@{'/images' +'?name=' + ${drawing.name}}"/>
+				<img th:case="'Dessin-du-Mois'" th:src="@{'/getFileP' +'?name=' + ${drawing.name}}"/>
+				<img th:case="*" th:src="@{'/getFile' +'?name=' + ${drawing.name}}"/>
 			</a>
 				
 			<a id="exit" href="javascript:history.back()">		

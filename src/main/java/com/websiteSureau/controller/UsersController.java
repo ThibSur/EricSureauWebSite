@@ -1,11 +1,16 @@
 package com.websiteSureau.controller;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import com.websiteSureau.service.UserExcelExporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -44,7 +49,7 @@ public class UsersController {
 	//save new user if its email not already exist.
 	@PostMapping("/saveUser")
 	public String saveUser(@ModelAttribute MyUser user, HttpServletRequest request, RedirectAttributes attributes) 
-			throws UnsupportedEncodingException, MessagingException {
+			throws MessagingException {
 		
 		boolean userEmailAlreadyExist = false;
 		Optional<MyUser> existingUser = userService.getUserByEmail(user.getEmail());
@@ -62,7 +67,7 @@ public class UsersController {
 	@PostMapping("/updateUser")
 	public ModelAndView updateUser(@ModelAttribute MyUser user, @RequestParam("drawingID") int drawingID, 
 			RedirectAttributes attributes, HttpServletRequest request) 
-			 throws UnsupportedEncodingException, MessagingException {
+			 throws MessagingException {
 		
 		Optional<Drawing> drawingUser = serviceDrawing.getDrawing(drawingID);
 		if (drawingUser.isPresent()) {
@@ -153,11 +158,26 @@ public class UsersController {
 	
 	@PostMapping("/resetPassword")
 	public String resetPassword(@ModelAttribute MyUser user, HttpServletRequest request, RedirectAttributes attributes) 
-			throws UnsupportedEncodingException, MessagingException {
+			throws MessagingException {
 		Boolean r = userService.resetPassword(user, getSiteURL(request));
 		userService.deleteVerificationCode(user, 3600);
-	    attributes.addFlashAttribute("passwordReseted", r);    
+	    attributes.addFlashAttribute("passwordReset", r);
 	    return "redirect:/resetPassword";	
+	}
+
+	@GetMapping("/admin/export/excel")
+	public void exportToExcel(HttpServletResponse response) throws IOException {
+		response.setContentType("application/octet-stream");
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String currentDateTime = dateFormatter.format(new Date());
+
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=users_" + currentDateTime + ".xlsx";
+		response.setHeader(headerKey, headerValue);
+
+		Iterable<MyUser> listUsers = userService.getUsers();
+		UserExcelExporter excelExporter = new UserExcelExporter(listUsers);
+		excelExporter.export(response);
 	}
 
 }

@@ -14,7 +14,7 @@
 			<div id = "bd">
 				<a class="left" th:href="'/comics/' + ${id} + '?page=' + ${currentPage-1} + '#bd'">&#10094;</a>		
 				<figure>
-					<img th:src="@{'/images' +'?name=' + ${drawings[currentPage]}}" th:alt="${title}" />
+					<img th:src="@{'/getFile' +'?name=' + ${drawings[currentPage]}}" th:alt="${title}" />
 				</figure>
 				<a class="right" th:href="'/comics/' + ${id} + '?page=' + ${currentPage+1} + '#bd'">&#10095;</a>
 			</div>

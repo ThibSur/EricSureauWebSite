@@ -43,6 +43,7 @@
 								    <th>Newsletter</th>
 								    <th>Caricature</th>
 								    <th>Activation</th>
+									<th>Connexion</th>
 								</tr>
 								<tr th:each="user: ${users}">
 									<td><span th:text="${user.name}"> </span></td>
@@ -54,6 +55,7 @@
 									<td><span th:if="${user.enabled} eq 1"> ✔ </span>
 										<span th:if="${user.enabled} eq 0"> ✖ </span>
 									</td>
+									<td><span th:text="${user.userConnectionDate}"> </span></td>
 									<td>
 										<a th:href="@{/updateUser/{id}(id=${user.id})}"><button>Modifier</button></a>
 									</td>
@@ -68,7 +70,8 @@
 					
 					<div id="usersManageEnd">
 						<h4><a th:href="@{/createUser}">Ajouter un nouvel abonné</a></h4>
-						<h4 th:if="${users ne null}" th:text="${users.size} + ' abonnés'"></h4>
+						<p><a th:href="@{/admin/export/excel}" th:if="${users ne null}" th:text="${users.size} + ' abonnés'"></a></p>
+						<p><a th:href="@{/admin/monthsConnections}" th:text="'Connexions ce mois : ' + ${numberOfConnectionsMonth}"></a></p>
 					</div>
 					
 				</div>
@@ -86,14 +89,7 @@
 							<div class="form-group">
 								<label for="typeDrawing"> Catégorie </label>
 								<select th:field="*{type}" name="typeDrawing" id="typeDrawing">
-									<option value="Actualités">Actualités</option>
-									<option value="Environnement">Environnement</option>
-									<option value="Sport">Sport</option>
-									<option value="Personnel">Personnel</option>
-									<option value="Caricatures">Caricatures</option>
-									<option value="BD">Bande dessinée</option>
-									<option value="Dessin-du-Mois">Dessin du mois</option>
-									<option value="BD_Accueil">BD page d'accueil</option>
+									<option th:each="dt: ${drawingTypes}" th:value="${dt}" th:text="${dt}" ></option>
 								</select>						
 							</div>										
 							<div class="form-group">
@@ -207,15 +203,16 @@
 			</section>
 			
 			<th:block th:insert="~{fragments :: footer}"></th:block> 
+			
 	 <script>
 		function myFunction1() {
-		  var x = document.getElementById('usersManage');
-		  if (x.style.display === 'none') {
-		    x.style.display = 'block';
-		  } else {
-		    x.style.display = 'none';
-		  }
-		}
+			  var x = document.getElementById('usersManage');
+			  if (x.style.display === 'none') {
+			    x.style.display = 'block';
+			  } else {
+			    x.style.display = 'none';
+			  }
+			}
 		function myFunction2() {
 			  var x = document.getElementById('filesManage');
 			  if (x.style.display === 'none') {

@@ -73,7 +73,7 @@ public class SiteNewsController {
 	public ModelAndView sendNewsletter(@ModelAttribute SiteNews newsletter, RedirectAttributes attributes) 
 			throws MessagingException {
 		List<MyUser> listUsers = (List<MyUser>) userService.getUsersBySubscriptionTrue();
-		mailService2.sendNewsletter(newsletter, listUsers);
+		mailService2.sendNewsletter(newsletter, listUsers, 86400);
 		attributes.addFlashAttribute("message2", "La newsletter a bien été envoyée.");
 		return new ModelAndView("redirect:/admin");
 	}
@@ -81,8 +81,8 @@ public class SiteNewsController {
 	@PostMapping("/sendNewsletterTest")
 	public ModelAndView sendNewsletterTestToAdminUsers(@ModelAttribute SiteNews newsletter, RedirectAttributes attributes) 
 			throws MessagingException {
-		List<MyUser> listUsersToTest = (List<MyUser>) userService.getUsersByAuthority("ROLE_ADMIN");
-		mailService2.sendNewsletter(newsletter, listUsersToTest);
+		List<MyUser> listUsersToTest = (List<MyUser>) userService.getUsersByAuthority("ADMIN");
+		mailService2.sendNewsletter(newsletter, listUsersToTest, 86400);
 		attributes.addFlashAttribute("message2", "Le test a bien été envoyé.");
 		return new ModelAndView("redirect:/admin");
 	}

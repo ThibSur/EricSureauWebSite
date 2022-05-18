@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.websiteSureau.model.Drawing;
+import com.websiteSureau.model.DrawingType;
 import com.websiteSureau.model.MyUser;
 import com.websiteSureau.repository.FileAWSS3Repository;
 import com.websiteSureau.service.DrawingService;
@@ -48,8 +49,7 @@ public class FilesDrawingController {
     	
     	if (file.isEmpty()) {
             attributes.addFlashAttribute("message1", "Merci de sélectionner une image à sauvegarder.");
-            return "redirect:/admin";
-    	} else {
+		} else {
     		drawing.setName(file.getOriginalFilename());
     		boolean saveSuccessful = drawingService.save(drawing);
 	   		if (saveSuccessful) {
@@ -58,11 +58,11 @@ public class FilesDrawingController {
 	   		} else { 
 	   			attributes.addFlashAttribute("message1", "L'image " + file.getOriginalFilename() + " existe déjà !"); 
 	   			}
-	   	    return "redirect:/admin";
-   	     }
-    }
+		}
+		return "redirect:/admin";
+	}
     
-    @GetMapping("/images")
+    @GetMapping("/getFile")
     public ResponseEntity<Object> findByNamePrivate(@RequestParam String name) {
     	try {
 	        return ResponseEntity
@@ -77,7 +77,7 @@ public class FilesDrawingController {
     	}
     }
     
-    @GetMapping("/imagesP")
+    @GetMapping("/getFileP")
     public ResponseEntity<Object> findByNamePublic(@RequestParam String name) {
     	try {
 	        return ResponseEntity
@@ -118,7 +118,7 @@ public class FilesDrawingController {
     
     @GetMapping("/drawingUpdatePage")
 	public String updateDrawing(@RequestParam("nameFile") String fileName, RedirectAttributes attributes, Model model) {
-    	
+
     	if (fileName.isEmpty()) {
     		attributes.addFlashAttribute("message1", "Veuillez sélectionner une image à modifier.");
         	return "redirect:/admin";
@@ -126,6 +126,7 @@ public class FilesDrawingController {
 			Drawing dr = drawingService.getDrawingByName(fileName);
 			dr.setDate(dr.getDate() + "-" + "01");
 			model.addAttribute("drawing", dr);
+			model.addAttribute("drawingTypes", DrawingType.TYPES);
 			return "formUpdateDrawing";	
     	}
 	}
@@ -147,9 +148,11 @@ public class FilesDrawingController {
     		if (drawing.getType().equals(oldDrawing.getType())) {
     			attributes.addFlashAttribute("message2", messageOk);
     			drawingService.updateDrawing(drawing);
-    		} else if (drawing.getType().equals("Dessin-du-Mois")) {
-    			attributes.addFlashAttribute("message1", "Modification impossible : veuillez sélectionner un fichier pour ajouter un dessin du mois.");		
-    		} else if (oldDrawing.getType().equals("Dessin-du-Mois")) {
+    		} else if (drawing.getType().equals(DrawingType.MONTH_DRAWING)) {
+    			attributes.addFlashAttribute("message1", "Modification impossible : veuillez sélectionner un fichier pour ajouter un dessin du mois.");
+			} else if (drawing.getType().equals(DrawingType.HOME_COMICS)) {
+				attributes.addFlashAttribute("message1", "Modification impossible : veuillez sélectionner un fichier pour ajouter une bd d'accueil.");
+			} else if (oldDrawing.getType().equals(DrawingType.MONTH_DRAWING)) {
     			fileService.delete(oldDrawing);
     			attributes.addFlashAttribute("message2", messageOk);
     			drawingService.updateDrawing(drawing);

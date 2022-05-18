@@ -12,13 +12,13 @@
 		<section>
 		
 		<div id = "bd">
-			<a class="left" th:href="'/comicsP?page=' + ${currentPage-1} + '#bd'">&#10094;</a>
+			<a id="left" class="left" th:href="'/comicsP?page=' + ${currentPage-1} + '#bd'">&#10094;</a>
 			<figure>
-				<img th:src="@{'/imagesP' +'?name=' + ${drawings[currentPage]}}" th:alt="${title}" />
+				<img th:src="@{'/getFileP' +'?name=' + ${drawings[currentPage]}}" th:alt="${title}" />
 				<figcaption th:text="'Page ' + ${currentPage+1}"> </figcaption>
 			</figure>
-			<a class="right" th:if="${currentPage==0}" th:href="'/comicsP?page=' + ${currentPage+1} + '#bd'">&#10095;</a>
-			<a class="right" th:if="${currentPage==1}" th:href="'/comics/0?page=' + ${currentPage+2} + '#bd'">&#10095;</a>
+			<a id="right" class="right" th:if="${currentPage==0}" th:href="'/comicsP?page=' + ${currentPage+1} + '#bd'">&#10095;</a>
+			<a id="right" class="right" th:if="${currentPage==1}" th:href="'/comics/0?page=' + ${currentPage+2} + '#bd'">&#10095;</a>
 		</div>
 
 		</section>

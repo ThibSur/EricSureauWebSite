@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -23,19 +25,21 @@ import com.websiteSureau.model.SiteNews;
 @Service
 @Transactional
 public class EmailServiceImpl2 extends EmailServiceImpl {
-	
+
+	private static final Logger LOG = LoggerFactory.getLogger(EmailServiceImpl2.class);
+
 	public void sendMessageUsingThymeleafTemplate(String to, String subject, Map<String, Object> templateModel)
 	        throws MessagingException {
 	                
-	Context thymeleafContext = new Context();
-	thymeleafContext.setVariables(templateModel);
-	String htmlBody = thymeleafTemplateEngine.process("newsletterTemplate.html", thymeleafContext);
-	    
-	sendHtmlMessage(to, subject, htmlBody);	
+		Context thymeleafContext = new Context();
+		thymeleafContext.setVariables(templateModel);
+		String htmlBody = thymeleafTemplateEngine.process("newsletterTemplate.html", thymeleafContext);
+
+		sendHtmlMessage(to, subject, htmlBody);
 	}
 	
 	@Async
-	public void sendNewsletter(SiteNews newsletter, List<MyUser> listOfEmailUsers)
+	public void sendNewsletter(SiteNews newsletter, List<MyUser> listOfEmailUsers, int seconds)
             throws MessagingException {
     	
 		//Send a newsletter to a list of users. 
@@ -49,21 +53,23 @@ public class EmailServiceImpl2 extends EmailServiceImpl {
         		model.put("nameUser", listOfEmailUsers.get(i).getName());
         		sendMessageUsingThymeleafTemplate(listOfEmailUsers.get(i).getEmail(), "Les petits dessins d'Eric Sureau", model);
 	        	if (y==60) {
+					LOG.info("newsletter sending -> break for 24h every 60 mails (to avoid gmail spam blockage)");
 	        		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 	        		Callable<Integer> task = () -> 0;
-	        		ScheduledFuture<Integer> future = scheduler.schedule(task, 86400, TimeUnit.SECONDS);
+	        		ScheduledFuture<Integer> future = scheduler.schedule(task, seconds, TimeUnit.SECONDS);
 				    try {
 						y=future.get();
 					} catch (InterruptedException | ExecutionException e) {
 						e.printStackTrace();
 					}
 				    scheduler.shutdown();
-	        	}
+					LOG.info("newsletter sending -> resume of the sending of mails");
+				}
 	        }
         } else {
-			for (MyUser listOfEmailUser : listOfEmailUsers) {
-				model.put("nameUser", listOfEmailUser.getName());
-				sendMessageUsingThymeleafTemplate(listOfEmailUser.getEmail(), "Les petits dessins d'Eric Sureau", model);
+			for (MyUser user : listOfEmailUsers) {
+				model.put("nameUser", user.getName());
+				sendMessageUsingThymeleafTemplate(user.getEmail(), "Les petits dessins d'Eric Sureau", model);
 			}
         }       
 	}

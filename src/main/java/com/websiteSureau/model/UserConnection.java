@@ -7,9 +7,6 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.DynamicUpdate;
 
-import lombok.Data;
-
-@Data
 @Entity
 @DynamicUpdate
 public class UserConnection {
@@ -18,8 +15,31 @@ public class UserConnection {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
-	private String userName;
+	private int numberOfConnections;
 	
-	private String connectionDate;
+	private String month;
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getNumberOfConnections() {
+		return numberOfConnections;
+	}
+
+	public void setNumberOfConnections(int numberOfConnections) {
+		this.numberOfConnections = numberOfConnections;
+	}
+
+	public String getMonth() {
+		return month;
+	}
+
+	public void setMonth(String month) {
+		this.month = month;
+	}
 }

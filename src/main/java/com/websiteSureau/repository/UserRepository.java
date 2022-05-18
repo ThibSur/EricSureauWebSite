@@ -20,4 +20,9 @@ public interface UserRepository extends JpaRepository<MyUser, Integer> {
     	value = "SELECT * FROM users WHERE drawing_id = :id", 
     	nativeQuery = true)
     Optional<MyUser> findByDrawingID(@Param("id") int drawingID);
+
+    @Query(
+            value = "SELECT * FROM users WHERE user_connection_date is not null",
+            nativeQuery = true)
+    Iterable<MyUser> findByUserConnectionDate();
 }

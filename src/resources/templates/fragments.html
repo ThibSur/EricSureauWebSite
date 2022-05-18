@@ -32,7 +32,7 @@
 					<a href="/drawings?type=4"> Caricatures </a>
 					<a href="/author"> L'Auteur </a>
 					<a href="/contact">Contact</a>
-					<a href="/admin" th:if="${userRole eq 'ROLE_ADMIN'}"> Admin </a>
+					<a href="/admin" th:if="${userRole eq 'ADMIN'}"> Admin </a>
 					<a id="log" href="/login">
 						<span id="userName" th:text="${loginUserName}"> </span>
 						<img th:src="${drawingName}"> 

@@ -46,10 +46,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 			http
 			.authorizeRequests()
 			 	.antMatchers("/", "/saveUser", "/createPassword/**", "/savePassword", "/createUser/**", "/resetPassword", //HomePage and UserManagement
-			 				"/contact", "/sendMessage", "/comicsP**",	"/imagesP", "/displayImage", //contact and public comics / drawings
-			 				 "/css/*.css", "/js/*.js", "/img/logos/**", "/fragments", "/legal", "/author") //other pages and css, logos, fragments.... 
+			 				"/contact", "/sendMessage", "/comicsP**",	"/getFileP", "/displayImage", //contact and public comics / drawings
+			 				 "/css/*.css", "/js/*.js", "/img/logos/**", "/fragments", "/legal") //other pages and css, logos, fragments.... 
 			 			.permitAll()
-			 	.antMatchers("/admin", //adminPage
+			 	.antMatchers("/admin", "/admin/**", //adminPage and methods
 			 				"/updateUser/*", "/updateUser", "/deleteUser/*", //UsersManagement
 			 				"/uploadFile", "/deleteFile", "/drawingUpdatePage", "/updateDrawing", "/deleteFilePage", //FilesManagement
 			 				"/saveNews", "/deleteNews", "/updateNews", "/newsManage", //siteNewsManagement

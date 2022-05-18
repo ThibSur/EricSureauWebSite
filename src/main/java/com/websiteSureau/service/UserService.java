@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,21 +21,18 @@ import com.websiteSureau.model.Drawing;
 import com.websiteSureau.model.MyUser;
 import com.websiteSureau.repository.UserRepository;
 
-import lombok.Data;
 import net.bytebuddy.utility.RandomString;
 
-@Data
 @Service
+@Primary
 @Transactional
 public class UserService {
 	
     @Autowired
-	private UserRepository userRepository;
+	protected UserRepository userRepository;
 
 	@Autowired
 	private EmailServiceImpl mailService;
-    
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
     
     private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 	
@@ -161,11 +159,11 @@ public class UserService {
     @Async
 	public void activateUser(MyUser user, String siteURL, int seconds) throws MessagingException {		
     	try {
-    		System.out.println("Execute activateUser asynchronously started - " + Thread.currentThread().getName());
+			LOG.info("Execute activateUser asynchronously started - " + Thread.currentThread().getName());
     		Thread.sleep(seconds * 1000);
     	} catch (InterruptedException ie) {
     		Thread.currentThread().interrupt();
-    		System.out.println("Execute method activateUser interrupted - " + Thread.currentThread().getName());
+			LOG.info("Execute method activateUser interrupted - " + Thread.currentThread().getName());
     	}
     	Optional<MyUser> e = getUser(user.getId());
     	if (e.isPresent() && e.get().getEnabled() == 0) {
@@ -175,7 +173,7 @@ public class UserService {
     		user.setEnabled(1);
     		mailService.sendVerificationEmail(user, siteURL);
     		userRepository.save(user);
-    		System.out.println("User is activated");
+			LOG.info("User is activated");
     	}
     	Thread.currentThread().interrupt();
     	System.out.println("Execute method activateUser finished - " + Thread.currentThread().getName());			
@@ -185,14 +183,14 @@ public class UserService {
 	@Async
 	public void deleteVerificationCode(MyUser user, int seconds) {
 		MyUser us = userRepository.findByUserName(user.getEmail());
-		System.out.println("Execute deleteVerificationCode asynchronously started - " + Thread.currentThread().getName());
+		LOG.info("Execute deleteVerificationCode asynchronously started - " + Thread.currentThread().getName());
 		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 		Runnable runnableTask = () -> {
 			if (us.getVerificationCode()!=null) {
 				us.setVerificationCode(null);
 				userRepository.save(us);	
 				}
-			System.out.println("Execute method deleteVerificationCode finished - " + Thread.currentThread().getName());
+			LOG.info("Execute method deleteVerificationCode finished - " + Thread.currentThread().getName());
 			};
 		scheduler.schedule(runnableTask , seconds, TimeUnit.SECONDS);
 		scheduler.shutdown();

@@ -58,8 +58,11 @@
 						<figure>
 							<figcaption> Dessin du mois </figcaption>
 							<a th:href="@{'/displayImage' +'?name=' + ${drawingMonth.name}}">  
-							<img id="drawingMonth" th:src="@{'/imagesP?name=' + ${drawingMonth.name}}" th:alt="${drawingMonth.name}" title="Cliquez pour agrandir" /></a>
+							<img id="drawingMonth" th:src="@{'/getFileP?name=' + ${drawingMonth.name}}" th:alt="${drawingMonth.name}" title="Cliquez pour agrandir" /></a>
 						</figure>
+						<form method="post" th:action="@{'/addDrawingLike?nameFile=' + ${drawingMonth.name}}">
+							<button id="like" type="submit" th:text="${#lists.size(drawingMonth.usersLike)} + ' 👍'"> </button>
+						</form>
 						
 					</aside>
 				
@@ -70,7 +73,7 @@
 					<figure th:if="${comicsMonth ne null}">
 						<figcaption th:text="'BD en cours : ' + ${comicsMonth.title}"> </figcaption>
 						<a th:href="@{/comicsP?page=0#bd}">  
-						<img id="comicsMonth" th:src="@{'/imagesP?name=' + ${comicsMonth.name}}" th:alt="${comicsMonth.name}" title="Cliquez pour agrandir" /></a>
+						<img id="comicsMonth" th:src="@{'/getFileP?name=' + ${comicsMonth.name}}" th:alt="${comicsMonth.name}" title="Cliquez pour agrandir" /></a>
 					</figure>
 					
 					<div id="art">

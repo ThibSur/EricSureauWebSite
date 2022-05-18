@@ -22,7 +22,9 @@
 					<tr> 
 						<td th:each="drawing: ${drawings}" th:if="${drawing.date} eq ${date}">  
 							<a th:href="@{'/displayImage' +'?name=' + ${drawing.name}}"> 
-							<img th:if="${drawing.privateDrawing} eq false" th:src="@{'/images' +'?name=' + ${drawing.name}}" th:alt="${drawing.name}" title="Cliquez pour agrandir" /></a>
+								<img th:if="${drawing.privateDrawing} eq false" th:src="@{'/getFile' +'?name=' + ${drawing.name}}" 
+								th:alt="${drawing.name}" title="Cliquez pour agrandir" />
+							</a>
 						</td>
 					</tr>
 				</table>	

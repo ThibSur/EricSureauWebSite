@@ -45,9 +45,9 @@ public class UserReportingConnectionService extends UserService {
 	public int getConnectionsNumberFromUsersForTheCurrentMonth() {
 		Iterable<MyUser> userWithConnectionsDate = userRepository.findByUserConnectionDate();
 		int numberOfConnections = 0;
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM");
-		dateFormat.setCalendar(Calendar.getInstance(TimeZone.getTimeZone("GMT+2:00")));
-		String currentMonthDate = dateFormat.format(System.currentTimeMillis());
+		SimpleDateFormat s = new SimpleDateFormat("yyyy/MM");
+		s.setCalendar(Calendar.getInstance(TimeZone.getTimeZone("GMT+2:00")));
+		String currentMonthDate = s.format(System.currentTimeMillis());
 			for (MyUser user : userWithConnectionsDate) {
 				Date date = null;
 				try {
@@ -55,7 +55,7 @@ public class UserReportingConnectionService extends UserService {
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
-				String dateUserConnection = dateFormat.format(date);
+				String dateUserConnection = s.format(date);
 				if (currentMonthDate.equals(dateUserConnection)) {
 					numberOfConnections++;
 				}
@@ -72,14 +72,20 @@ public class UserReportingConnectionService extends UserService {
 		SimpleDateFormat s = new SimpleDateFormat("yyyy/MM");
 	    s.setCalendar(Calendar.getInstance(TimeZone.getTimeZone("GMT+2:00")));
 	    String date = s.format(System.currentTimeMillis());
-		UserConnection connexion = new UserConnection();
-		connexion.setNumberOfConnections(numberOfConnections);
-		connexion.setMonth(date);
+		
+	    UserConnection connexion = new UserConnection();
+		if (connectionsRepository.findByMonth(date).isPresent()) {
+			connexion = connectionsRepository.findByMonth(date).get();
+			connexion.setNumberOfConnections(numberOfConnections);
+		} else {
+			connexion.setNumberOfConnections(numberOfConnections);
+			connexion.setMonth(date);
+		}
 		connectionsRepository.save(connexion);
 	}
 	
 	//save number of connections of the current month every 1st day of the month at midnight
-	@Scheduled(cron = "0 0 0 1 * ?", zone = "Europe/Paris")
+	@Scheduled(cron = "0 59 23 * * ?", zone = "Europe/Paris")
 	public void deleteUserConnexions() {
 		int numberOfConnections = getConnectionsNumberFromUsersForTheCurrentMonth();
 		saveMonthConnexionNumber(numberOfConnections);

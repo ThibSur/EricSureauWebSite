@@ -28,6 +28,7 @@ public class EmailServiceImpl2 extends EmailServiceImpl {
 
 	private static final Logger LOG = LoggerFactory.getLogger(EmailServiceImpl2.class);
 
+	@Override
 	public void sendMessageUsingThymeleafTemplate(String to, String subject, Map<String, Object> templateModel)
 	        throws MessagingException {
 	                

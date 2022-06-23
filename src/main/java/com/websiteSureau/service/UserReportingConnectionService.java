@@ -74,6 +74,7 @@ public class UserReportingConnectionService extends UserService {
 	    String date = s.format(System.currentTimeMillis());
 		
 	    UserConnection connexion = new UserConnection();
+	    
 		if (connectionsRepository.findByMonth(date).isPresent()) {
 			connexion = connectionsRepository.findByMonth(date).get();
 			connexion.setNumberOfConnections(numberOfConnections);
@@ -84,12 +85,26 @@ public class UserReportingConnectionService extends UserService {
 		connectionsRepository.save(connexion);
 	}
 	
-	//save number of connections of the current month every 1st day of the month at midnight
+	//save number of connections of the current month every day at 11:59 pm
 	@Scheduled(cron = "0 59 23 * * ?", zone = "Europe/Paris")
-	public void deleteUserConnexions() {
+	public void saveCurrentUserConnexionsNumber() {
 		int numberOfConnections = getConnectionsNumberFromUsersForTheCurrentMonth();
 		saveMonthConnexionNumber(numberOfConnections);
-		LOG.info("connectionsUsers of the month saved");
+		LOG.info("connectionsUsers saved");
+	}
+
+	//delete connections number if the connections are older than 12 months every first day of the month
+	@Scheduled(cron = "0 0 0 1 * ?", zone = "Europe/Paris")
+	public void deleteOldUserConnexionsNumber() {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM");
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+2:00"));
+		cal.add(Calendar.YEAR, -1);
+		String date = dateFormat.format(cal.getTime());
+		if (connectionsRepository.findByMonth(date).isPresent()) {
+			UserConnection connexion = connectionsRepository.findByMonth(date).get();
+			connectionsRepository.delete(connexion);
+			LOG.info("connectionsUsers of the " + date + " deleted");
+		}
 	}
 
 	//Save each new connection in user db

@@ -120,7 +120,7 @@ public class UsersController {
 	@GetMapping("/deleteUserPage")
 	public String deleteUserConfirmationPage() {
 		return "formDeleteUser";		
-	}                                               
+	}                                      
 	
 	//delete user by id.
 	@PostMapping("/deleteUser/{id}")

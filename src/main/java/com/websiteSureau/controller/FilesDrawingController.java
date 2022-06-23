@@ -21,7 +21,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.websiteSureau.model.Drawing;
 import com.websiteSureau.model.DrawingType;
 import com.websiteSureau.model.MyUser;
-import com.websiteSureau.repository.FileAWSS3Repository;
 import com.websiteSureau.service.DrawingService;
 import com.websiteSureau.service.DrawingServiceAdditionalFunctions;
 import com.websiteSureau.service.FilesService;
@@ -42,7 +41,7 @@ public class FilesDrawingController {
 	@Autowired
 	private UserService userService;
 	
-	private static final Logger LOG = LoggerFactory.getLogger(FileAWSS3Repository.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FilesDrawingController.class);
 	    
     @PostMapping("/uploadFile")
     public String uploadFile(@RequestParam("file") MultipartFile file, @ModelAttribute Drawing drawing, RedirectAttributes attributes) throws Exception {
@@ -65,11 +64,12 @@ public class FilesDrawingController {
     @GetMapping("/getFile")
     public ResponseEntity<Object> findByNamePrivate(@RequestParam String name) {
     	try {
+			LOG.info("Image: '" + name + "' downloaded");
 	        return ResponseEntity
 	                .ok()
 	                .cacheControl(CacheControl.noCache())
-	                .header("Content-type", "application/octet-stream")
-	                .header("Content-disposition", "attachment; filename=\"" + name + "\"")
+	                .header("Content-type", "image/jpeg")
+	                .header("Content-disposition", "inline; filename=\"" + name + "\"")
 	                .body(new InputStreamResource(fileService.findByName("staticimages/private/" + name)));
     	} catch (Exception e) {
     		LOG.error("Error occurred while downloading the file, " + name + " does not exist");
@@ -80,18 +80,19 @@ public class FilesDrawingController {
     @GetMapping("/getFileP")
     public ResponseEntity<Object> findByNamePublic(@RequestParam String name) {
     	try {
-	        return ResponseEntity
+			LOG.info("Image: '" + name + "' downloaded");
+			return ResponseEntity
 	                .ok()
 	                .cacheControl(CacheControl.noCache())
-	                .header("Content-type", "application/octet-stream")
-	                .header("Content-disposition", "attachment; filename=\"" + name + "\"")
+	                .header("Content-type", "image/jpeg")
+	                .header("Content-disposition", "inline; filename=\"" + name + "\"")
 	                .body(new InputStreamResource(fileService.findByName("staticimages/public/" + name)));
 	    } catch (Exception e) {
 			LOG.error("Error occurred while downloading the file, " + name + " does not exist");
 			return null;
 		}
     }
-    
+
     @PostMapping("/deleteFile")
     public String deleteFile(@RequestParam("nameFile") String fileName, RedirectAttributes attributes) {
     	Drawing drawing = drawingService.getDrawingByName(fileName);
@@ -170,5 +171,5 @@ public class FilesDrawingController {
     	drawingService2.addLikeToDrawing(fileName, SecurityContextHolder.getContext().getAuthentication().getName());
     	return "redirect:/"; 	
     }
-
+    
 }
